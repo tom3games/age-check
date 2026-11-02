@@ -1,7 +1,7 @@
 // 年齢確認 v2 — 本体。売上ノルマ・行列・止まらない時間・偽物の身分証。描画は Canvas 2D、時間は固定60Hz（performance.now で数える）
-import { drawPayslip, totals } from './payslip.js?v=2'
-import { Snd } from './snd.js?v=2'
-import { drawCard } from './card.js?v=2'
+import { drawPayslip, totals } from './payslip.js?v=3'
+import { Snd } from './snd.js?v=3'
+import { drawCard } from './card.js?v=3'
 const D = window.AC
 const $ = s => document.querySelector(s)
 const store = { get(k) { try { return localStorage.getItem(k) } catch (e) { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch (e) {} } }
@@ -12,7 +12,7 @@ const isTouch = () => matchMedia('(pointer:coarse)').matches
 const QS = ['birth', 'eto', 'name', 'trend', 'job']
 
 // ---------- 画像
-const V = '?v=2'
+const V = '?v=3'
 const IMG = {}
 const NAMES = ['bg', 'c_m', 'c_m_x', ...D.C.map(c => c.k), ...D.C.filter(c => c.angry).map(c => c.angry), ...Object.values(D.ITEMS).map(i => i.img)]
 function loadAll() {
@@ -65,6 +65,9 @@ const modalOpen = () => !$('#mId').hidden || !$('#mSheet').hidden || !$('#mHow')
 const minuteNow = () => Math.min(300, G.el / SHIFT * 300)
 function clockText(min) { const h = Math.floor(min / 60), m = Math.floor(min % 60); return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') }
 const priceOf = c => D.ITEMS[c.item].p * c.n
+// その夜の役（くじ）で上書きされる値。i は {c, v}（行列の客）でも cur でもよい
+const rv = (i, f) => (i.v && i.v[f] !== undefined ? i.v[f] : i.c[f])
+const isMinor = i => !!rv(i, 'minor')
 
 // 1晩の客と身分証の出方と来る時刻を決める（同じ種なら同じ夜）
 function buildNight(seed, all) {
@@ -76,11 +79,11 @@ function buildNight(seed, all) {
   const chosen = shuffle(all ? [...yokai, ...humans] : [...yokai, ...humans.slice(0, 12)])
   const insts = chosen.map(c => ({ c, v: pick(c.ids) }))
   // 必ず入れる難しさ: 大人の日付の偽物・借り物を持った未成年が2人以上、身分証の無い大人が（じいさん以外に）1人以上
-  const fakeOK = i => i.c.minor && i.c.ids.some(v => v.fake && v.y && v.y <= 2006)
-  let fakes = insts.filter(i => i.v.fake && i.v.y <= 2006)
-  for (const i of insts) { if (fakes.length >= 2) break; if (fakeOK(i) && !fakes.includes(i)) { i.v = i.c.ids.find(v => v.fake && v.y <= 2006); fakes.push(i) } }
-  let noid = insts.filter(i => !i.c.minor && i.v.none && !i.c.yokai)
-  for (const i of insts) { if (noid.length >= 1) break; if (!i.c.minor && !i.c.yokai && i.c.ids.some(v => v.none)) { i.v = i.c.ids.find(v => v.none); noid.push(i) } }
+  const fakeOK = i => i.c.ids.some(v => v.fake && v.y && v.y <= 2006 && (v.minor ?? i.c.minor))
+  let fakes = insts.filter(i => i.v.fake && i.v.y <= 2006 && isMinor(i))
+  for (const i of insts) { if (fakes.length >= 2) break; if (fakeOK(i) && !fakes.includes(i)) { i.v = i.c.ids.find(v => v.fake && v.y <= 2006 && (v.minor ?? i.c.minor)); fakes.push(i) } }
+  let noid = insts.filter(i => !isMinor(i) && i.v.none && !i.c.yokai)
+  for (const i of insts) { if (noid.length >= 1) break; if (!i.c.yokai && i.c.ids.some(v => v.none && !(v.minor ?? i.c.minor))) { i.v = i.c.ids.find(v => v.none && !(v.minor ?? i.c.minor)); noid.push(i) } }
   const list = [{ c: A, v: A.ids[0] }, ...insts]
   // 来る時刻: 終電後（0:50ごろ）と2時半ごろに行列ができる
   // 4人の波を2回（終電後・2時半ごろ）。波の中は1.5〜3秒おき、残りの時間を他の間隔に配る
@@ -106,7 +109,7 @@ function startShift(seed, opts = {}) {
   Snd.init()
   G.seed = seed ?? ((Math.random() * 1e9) | 0)
   G.night = buildNight(G.seed, opts.all); G.queue = []; G.complaints = 0; G.sales = 0; G.ended = null; G.tasks = []; G.snap = null; G.mag = null; G.log = []; G.el = 0; G.running = false; G.tut = 0
-  G.quota = Math.round(G.night.filter(i => !i.c.minor).reduce((a, i) => a + priceOf(i.c), 0) * 0.7 / 100) * 100
+  G.quota = Math.round(G.night.filter(i => !isMinor(i)).reduce((a, i) => a + priceOf(i.c), 0) * 0.7 / 100) * 100
   closeCard(); $('#mCheck').hidden = true; $('#event').hidden = true
   updateHud(); show('vPlay'); hideBubble(); hideNote(); setPos(null)
   G.mode = 'boss'; G.cur = { boss: true, img: 'c_m', enterAt: G.t, leaveAt: null, anger: 0, asked: {}, c: { k: 'c_m', pat: 9 } }
@@ -138,7 +141,7 @@ function callNext() {
   later(1.2, () => {
     if (G.cur !== cur) return
     $('#posTag').textContent = L().posYes; Snd.sfx('yes')
-    say(tx(c.hello), c.ghost ? 'ghost' : '')
+    say(tx(rv(cur, 'hello')), c.ghost ? 'ghost' : '')
     cur.phase = 'turn'; cur.lastAct = G.t; setButtons(true)
     if (G.tut === 1) { if (G.night.filter(i => i.result).length >= 2) G.tut = 0; else note(L().tut.look(isTouch()), 'tut') }
   })
@@ -167,8 +170,8 @@ function act(a, arg) {
     later(2.4, () => {
       if (G.cur !== cur || cur.phase !== 'turn') return
       setButtons(true)
-      if (!cur.v.none) { say(tx(c.idLine), c.ghost ? 'ghost' : ''); openCard(cur) }
-      else { say(tx(c.noId), c.ghost ? 'ghost' : ''); note(L().noIdNote) }
+      if (!cur.v.none) { say(tx(rv(cur, 'idLine')), c.ghost ? 'ghost' : ''); openCard(cur) }
+      else { say(tx(rv(cur, 'noId')), c.ghost ? 'ghost' : ''); note(L().noIdNote) }
     })
     return true
   }
@@ -186,7 +189,7 @@ function addAnger(n) {
   return false
 }
 function record(cur, res) {
-  const c = cur.c, ok = res === 'sell' ? !c.minor : res === 'left' ? c.minor : c.minor
+  const m = isMinor(cur), ok = res === 'sell' ? !m : m
   cur.inst.result = res; cur.inst.ok = ok; cur.inst.state = 'done'
 }
 function rage() {
@@ -195,7 +198,7 @@ function rage() {
   Snd.sfx('slam'); Snd.sfx('shout')
   say(tx(c.rage), 'rage'); record(cur, 'rage'); G.log.push(c.k + ':rage')
   later(0.15, () => snapshot())
-  if (!c.minor) complaint()
+  if (!isMinor(cur)) complaint()
   later(2.2, leave)
 }
 function finish(a) {
@@ -204,11 +207,11 @@ function finish(a) {
   if (a === 'sell') {
     Snd.sfx('cash'); say(tx(c.sell), c.ghost ? 'ghost' : '')
     G.sales += priceOf(c); updateHud()
-    if (c.minor && c.detect) { snapshot(); later(1.6, () => { G.pendingDetect = c }); later(1.6, leave); return }
+    if (isMinor(cur) && rv(cur, 'detect')) { snapshot(); const dt = rv(cur, 'detect'); later(1.6, () => { G.pendingDetect = { k: c.k, detect: dt } }); later(1.6, leave); return }
     later(1.6, leave)
   } else {
-    Snd.sfx('refuse'); say(tx(c.refuse), c.ghost ? 'ghost' : (c.minor ? '' : 'rage'))
-    if (!c.minor) {
+    Snd.sfx('refuse'); say(tx(rv(cur, 'refuse')), c.ghost ? 'ghost' : (isMinor(cur) ? '' : 'rage'))
+    if (!isMinor(cur)) {
       complaint(); cur.shake = G.t
       if (c.ghost) { G.ghostDark = G.t; Snd.sfx('whisper'); Snd.sfx('flick') }
       if (c.k === 'y_kappa') Snd.sfx('splash')
@@ -246,7 +249,7 @@ const bossAngry = () => { G.cur = { boss: true, img: 'c_m_x', enterAt: G.t, leav
 function detected(c) { G.ended = 'stop'; Snd.setTrack('bad'); bossAngry(); eventShow(tx(c.detect), L().endStop, c.k === 'c_f' ? 'phone' : 'siren') }
 function fired() { G.ended = 'fired'; Snd.setTrack('bad'); bossAngry(); eventShow(tx(D.EV.fired), L().endFired, 'phone') }
 function dawn() {
-  for (const i of G.queue) { i.state = 'done'; i.result = 'left'; i.ok = i.c.minor }
+  for (const i of G.queue) { i.state = 'done'; i.result = 'left'; i.ok = isMinor(i) }
   G.queue = []
   $('#clk').textContent = '05:00'
   if (G.sales >= G.quota) { G.ended = 'dawn'; Snd.setTrack('dawn'); G.cur = null; eventShow(tx(D.EV.dawnOk), '', null) }
@@ -255,13 +258,13 @@ function dawn() {
 function result() {
   const ja = lang === 'ja', hours = G.ended === 'dawn' || G.ended === 'quota' ? 5 : Math.max(0.5, Math.round(minuteNow() / 30) / 2)
   const seen = G.night.filter(i => i.result), right = seen.filter(i => i.ok).length
-  const minorsRefused = seen.filter(i => i.c.minor && i.result !== 'sell').length
+  const minorsRefused = seen.filter(i => isMinor(i) && i.result !== 'sell').length
   const pay = [], ded = []
   pay.push({ label: ja ? '売上歩合' : 'Sales commission', note: `¥${G.sales.toLocaleString()} × 5%`, yen: Math.round(G.sales * 0.05) })
   if (minorsRefused) pay.push({ label: ja ? '見抜き手当' : 'Sharp-eye bonus', note: ja ? `未成年 ${minorsRefused}人` : `${minorsRefused} minors`, yen: 300 * minorsRefused })
   if (G.complaints) ded.push({ label: ja ? 'クレーム' : 'Complaints', note: ja ? `${G.complaints}件` : `${G.complaints}`, yen: 1500 * G.complaints })
   if (G.ended === 'stop') ded.push({ label: ja ? '罰金' : 'Fine', note: ja ? '50万円以下' : 'up to ¥500,000', yen: 500000 })
-  const sneaky = seen.some(i => i.c.minor && i.result === 'sell')
+  const sneaky = seen.some(i => isMinor(i) && i.result === 'sell')
   let stamp, comment
   if (G.ended === 'stop') { stamp = ja ? '営業\n停止' : 'SHUT\nDOWN'; comment = tx(D.BOSSC.stop) }
   else if (G.ended === 'fired') { stamp = ja ? 'クビ' : 'FIRED'; comment = tx(D.BOSSC.fired) }
@@ -286,8 +289,8 @@ function showCheck() {
   const g = $('#ckGrid'); g.innerHTML = ''
   for (const i of seen) {
     const f = faceOf(i.c.k), b = document.createElement('button'); b.className = 'ck ' + (i.ok ? 'ok' : 'ng')
-    b.innerHTML = `<i style="background-image:url(img/${i.c.k}.webp${V});background-size:340%;background-position:${bp(f[0] / 1024, 136, 40)}% ${bp((f[1] - 70) / 1536, 204, 40)}%"></i><b>${i.c.age}</b><span>${u.you[i.result]}</span><em>${i.ok ? '○' : '×'}</em>`
-    b.addEventListener('click', () => { $('#ckWhy').textContent = `${u.real(i.c.age)}：${tx(i.v.why)}`; g.querySelectorAll('.ck').forEach(e => e.classList.remove('sel')); b.classList.add('sel') })
+    b.innerHTML = `<i style="background-image:url(img/${i.c.k}.webp${V});background-size:340%;background-position:${bp(f[0] / 1024, 136, 40)}% ${bp((f[1] - 70) / 1536, 204, 40)}%"></i><b>${rv(i, 'age')}</b><span>${u.you[i.result]}</span><em>${i.ok ? '○' : '×'}</em>`
+    b.addEventListener('click', () => { $('#ckWhy').textContent = `${u.real(rv(i, 'age'))}：${tx(i.v.why)}`; g.querySelectorAll('.ck').forEach(e => e.classList.remove('sel')); b.classList.add('sel') })
     g.appendChild(b)
   }
   $('#ckWhy').textContent = lang === 'ja' ? '顔を押すと、見抜く決め手が出る' : 'Tap a face to see the giveaway'
@@ -522,7 +525,7 @@ function step(dt) {
     // 行列の待ち時間（幽霊と妖怪は待てる）
     for (const i of [...G.queue]) {
       i.waited += dt
-      if (i.waited > PATIENCE * (i.c.yokai || i.c.ghost ? 2 : 1)) { G.queue.splice(G.queue.indexOf(i), 1); i.state = 'done'; i.result = 'left'; i.ok = i.c.minor; Snd.sfx('leave'); note(tx(D.EV.leftQueue), 'warn') }
+      if (i.waited > PATIENCE * (i.c.yokai || i.c.ghost ? 2 : 1)) { G.queue.splice(G.queue.indexOf(i), 1); i.state = 'done'; i.result = 'left'; i.ok = isMinor(i); Snd.sfx('leave'); note(tx(D.EV.leftQueue), 'warn') }
     }
     if (!G.cur && G.queue.length) callNext()
     if (G.el >= SHIFT && !G.cur && !G.pendingDetect) { G.running = false; dawn() }
@@ -598,8 +601,8 @@ function muteIcon() { $('#icoSnd').style.opacity = Snd.muted ? 0.35 : 1; $('#bMu
 window.ac = {
   G, D, Snd, SHIFT, PATIENCE,
   start: (seed, opts) => startShift(seed, opts),
-  act, inspect, showEnd, showCheck, result: () => G.result, total: () => G.total, buildNight,
-  state: () => ({ mode: G.mode, el: G.el, k: G.cur && G.cur.c ? G.cur.c.k : null, v: G.cur && G.cur.v ? G.cur.v : null, phase: G.cur ? G.cur.phase : null, busy: G.cur ? G.t < G.cur.busyUntil : false, anger: G.cur ? G.cur.anger : 0, complaints: G.complaints, sales: G.sales, quota: G.quota, ended: G.ended, queue: G.queue.map(i => i.c.k), night: G.night.map(i => i.c.k), done: G.night.filter(i => i.result).map(i => ({ k: i.c.k, r: i.result, ok: i.ok })), bubble: $('#bubble').hidden ? null : $('#bubble').textContent, note: $('#note').hidden ? null : $('#note').textContent, card: !$('#mId').hidden, event: !$('#event').hidden }),
+  act, inspect, showEnd, showCheck, isMinor, rv, result: () => G.result, total: () => G.total, buildNight,
+  state: () => ({ mode: G.mode, el: G.el, k: G.cur && G.cur.c ? G.cur.c.k : null, minor: G.cur && G.cur.v ? isMinor(G.cur) : null, claim: G.cur && G.cur.v ? rv(G.cur, 'claim') : null, v: G.cur && G.cur.v ? G.cur.v : null, phase: G.cur ? G.cur.phase : null, busy: G.cur ? G.t < G.cur.busyUntil : false, anger: G.cur ? G.cur.anger : 0, complaints: G.complaints, sales: G.sales, quota: G.quota, ended: G.ended, queue: G.queue.map(i => i.c.k), night: G.night.map(i => i.c.k), done: G.night.filter(i => i.result).map(i => ({ k: i.c.k, r: i.result, ok: i.ok })), bubble: $('#bubble').hidden ? null : $('#bubble').textContent, note: $('#note').hidden ? null : $('#note').textContent, card: !$('#mId').hidden, event: !$('#event').hidden }),
   view: () => ({ ...VIEW, area: AREA }),
   drawScene, IMG,
   hs: k => D.C.find(c => c.k === k).hs.map(h => ({ sx: CX0 + h[0] * K * CS, sy: CTOP + h[1] * K * CS, ja: h[3].ja })),

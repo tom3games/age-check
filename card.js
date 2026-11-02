@@ -49,6 +49,15 @@ export function drawCard(cv, v, o) {
     x.font = `700 24px ${F}`; x.fillText(ja ? '有効期限 2029年3月31日' : 'Valid until 2029.3.31', 50, 470)
     if (v.fake) { x.save(); x.globalAlpha = 0.18; x.fillStyle = '#000'; for (let i = 0; i < 40; i++) x.fillRect((i * 97) % W, (i * 53) % H, 3, 3); x.restore() }
     photo(x, im, face, 690, 150, 240, 300)
+  } else if (v.kind === 'hoken') {
+    rr(x, 10, 10, W - 20, H - 20, 26); const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#e6f1fb'); g.addColorStop(1, '#cfe2f3'); x.fillStyle = g; x.fill()
+    x.fillStyle = '#1d4f8a'; x.font = `800 44px ${M}`; x.fillText(ja ? '健康保険　被保険者証' : 'HEALTH INSURANCE CARD', 50, 90)
+    x.fillStyle = '#16324f'; x.font = `700 28px ${F}`; x.fillText(ja ? '記号 4021　番号 117' : 'Symbol 4021  No. 117', 50, 150)
+    x.font = `700 30px ${F}`; x.fillText(ja ? '氏名' : 'Name', 50, 230); x.font = `900 46px ${F}`; x.fillText(name, 170, 232)
+    x.font = `700 30px ${F}`; x.fillText(ja ? '生年月日' : 'Born', 50, 310); x.font = `900 40px ${F}`; x.fillText(ja ? `${wareki(v.y)} ${v.m}月 ${v.d}日` : `${wareki(v.y, 1)} / ${v.m} / ${v.d}`, 210, 312)
+    x.font = `700 26px ${F}`; x.fillText(ja ? '保険者　夜見市' : 'Insurer  Yomi City', 50, 390); x.fillText(ja ? '交付　令和7年4月1日' : 'Issued  Reiwa 7.4.1', 50, 440)
+    x.strokeStyle = '#7aa6d1'; x.setLineDash([10, 8]); x.lineWidth = 3; x.strokeRect(700, 150, 230, 290); x.setLineDash([])
+    x.fillStyle = '#7aa6d1'; x.font = `700 26px ${F}`; x.textAlign = 'center'; x.fillText(ja ? '写真なし' : 'No photo', 815, 305); x.textAlign = 'left'
   } else if (v.kind === 'shain') {
     rr(x, 10, 10, W - 20, H - 20, 26); x.fillStyle = '#fff'; x.fill()
     x.fillStyle = '#c0392b'; x.fillRect(10, 40, W - 20, 70)

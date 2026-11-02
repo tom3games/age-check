@@ -71,7 +71,7 @@ window.AC = (() => {
   // fake: 偽物・借り物（画面には出さない。答え合わせ用） / why: 見抜く決め手（答え合わせで出す）
   // a: その出方の時だけ答えが変わる分
   const C = [
-    { k: 'c_a', angry: 'c_a_x', minor: false, age: 72, item: 'cup', n: 1, pat: 3, idCost: 9, plain: true,
+    { k: 'c_a', claim: [1954, '午'], angry: 'c_a_x', minor: false, age: 72, item: 'cup', n: 1, pat: 3, idCost: 9, plain: true,
       hello: T('ワンカップ、ひとつ', 'One cup sake.'),
       a: { birth: T('昭和29年3月10日じゃ', 'Showa 29, March 10.'), eto: T('午じゃ', 'Horse.'), name: T('源田じゃ', 'Genda.'), trend: T('ベーゴマじゃな', 'Spinning tops.'), job: T('年金暮らしじゃ', 'Retired.') },
       ids: [{ none: true, why: T('しわ・シミ・白髪。身分証を求めるだけで怒る', 'Wrinkles, spots, white hair. Asking for ID is an insult') }],
@@ -79,7 +79,7 @@ window.AC = (() => {
       sell: T('……ふん。ありがとさん', 'Hmph. Thanks.'), refuse: T('なんで売らんのじゃ！', 'Why won\'t you sell?!'), rage: T('年寄りをバカにしおって！', 'You mock an old man?!'),
       hs: [[503, 400, 150, T('深いしわと、ほおのシミ。白い無精ひげ', 'Deep wrinkles, age spots, white stubble')], [503, 200, 110, T('真っ白で、うすい髪', 'Thin, pure white hair')], [520, 1180, 170, T('がま口の財布。手の甲にもシミ', 'Old coin purse. Spots on his hands')], [250, 860, 150, T('色あせた作業着', 'A faded work jacket')]] },
 
-    { k: 'c_b', minor: false, age: 28, item: 'strong', n: 3, pat: 4, idCost: 1,
+    { k: 'c_b', claim: [1998, '寅'], minor: false, age: 28, item: 'strong', n: 3, pat: 4, idCost: 1,
       hello: T('これ3本、お願いしまーす', 'These three, please.'),
       a: { birth: T('平成10年7月21日', 'Heisei 10, July 21.'), eto: T('寅！がおー', 'Tiger! Rawr.'), name: T('加藤真央でーす', 'Mao Kato.'), trend: T('DS！めっちゃやった', 'DS! Played it nonstop.'), job: T('OL。これコスプレね', 'Office job. This is a costume.') },
       ids: [
@@ -90,51 +90,57 @@ window.AC = (() => {
       sell: T('ありがと！おつかれー', 'Thanks! Hang in there.'), refuse: T('えー、28なんやけど…', 'Seriously? I\'m 28...'), rage: T('もうええわ、他で買う！', 'Forget it, I\'ll go elsewhere!'),
       hs: [[542, 433, 140, T('目の下にくま。くずれかけた大人のメイク', 'Dark circles. Fading grown-up makeup')], [482, 160, 120, T('ハロウィンのネコ耳', 'Halloween cat ears')], [811, 800, 140, T('長いジェルネイル。割れたスマホ', 'Long gel nails. Cracked phone')], [802, 1185, 100, T('手首に車のキー', 'Car key on her wrist')], [450, 1000, 170, T('テカテカの安いセーラー服。衣装だ', 'Shiny cheap sailor uniform. A costume')]] },
 
-    { k: 'c_c', minor: true, age: 17, item: 'tabako', n: 1, pat: 4, idCost: 1,
+    { k: 'c_c', claim: [2001, '辰'], minor: true, age: 17, item: 'tabako', n: 1, pat: 4, idCost: 1,
       hello: T('じゅ、14番ひとつ', 'N-number 14, one.'),
       a: { birth: T('へ、平成13年…っす', 'H-Heisei 13...'), eto: T('えっと…辰？っす', 'Uh... Dragon?'), name: T('高橋っす', 'Takahashi.'), trend: T('鬼滅っす！…あ', 'Demon Slayer! ...oops'), job: T('営業っす', 'Sales.') },
       ids: [
         { none: true, why: T('平成13年なら巳年。辰と答えた。流行りが鬼滅', 'Heisei 13 is Snake, not Dragon. Childhood craze: Demon Slayer') },
         { kind: 'shain', name: T('高橋 翔', 'Sho Takahashi'), why: T('社員証に生年月日は無い。年齢の証明にならない', 'A work badge has no birth date. Not proof of age') },
+        { kind: 'license', name: T('佐野 正和', 'Masakazu Sano'), y: 1981, m: 10, d: 3, photo: 'c_k', fake: true, claim: [1981, '未'], idLine: T('と、父ちゃんの…いや、俺のっす', 'M-my dad\'s... I mean, mine.'), a: { name: T('さ、佐野…っす', 'S-Sano...'), birth: T('しょ、昭和…56年っす', 'Sh-Showa... 56'), eto: T('…ひつじ？っす', '...Goat?') }, why: T('免許の写真は45歳のおじさん（父）。干支もちがう', 'The photo is a 45-year-old man (his dad). Wrong zodiac too') },
       ],
       noId: T('か、会社に置いてきたっす', 'L-left it at the office.'), idLine: T('社員証っす！', 'Work badge!'),
       sell: T('…っしゃ', '...Yes.'), refuse: T('…っす', '...Okay.'), rage: T('もういいっす！', 'Never mind!'),
       detect: T('10分後、警官が来た。「スーツの子、補導しました。高校2年です」', 'Ten minutes later, police: "That kid in the suit? 11th grader."'),
       hs: [[496, 400, 130, T('おでことあごにニキビ。うっすら産毛のひげ', 'Pimples. Just peach fuzz above the lip')], [800, 740, 150, T('スーツの肩が大きすぎる', 'Suit shoulders far too wide')], [513, 1110, 150, T('袖が手にかぶる。マジックテープの財布', 'Sleeves cover his hands. Velcro wallet')], [513, 815, 90, T('ゆるくて曲がったネクタイ', 'Loose, crooked tie')], [496, 180, 110, T('校則みたいな短い黒髪', 'School-rule haircut')]] },
 
-    { k: 'c_d', minor: false, age: 24, item: 'beer', n: 2, pat: 6, idCost: 0,
+    { k: 'c_d', claim: [2002, '午'], minor: false, age: 24, item: 'beer', n: 2, pat: 6, idCost: 0,
       hello: T('これ、お願いします', 'These, please.'),
       a: { birth: T('平成14年5月14日です', 'Heisei 14, May 14.'), eto: T('午です', 'Horse.'), name: T('佐倉小春です', 'Koharu Sakura.'), trend: T('妖怪ウォッチ。中1でハマってました', 'Yo-kai Watch, in 7th grade.'), job: T('看護師です。夜勤明けで', 'Nurse. Just off nights.') },
       ids: [
         { kind: 'license', name: T('佐倉 小春', 'Koharu Sakura'), y: 2002, m: 5, d: 14, why: T('童顔だが免許・名前・干支が全部合う', 'Baby face, but license, name and zodiac all match') },
         { none: true, why: T('荒れた手・病院の名札・ペンライト。夜勤明けの看護師', 'Chapped hands, hospital badge, penlight. A nurse off night shift') },
+        { kind: 'hoken', name: T('佐倉 小春', 'Koharu Sakura'), y: 2002, m: 5, d: 14, idLine: T('免許なくて…保険証でいいですか', 'No license... will my health card do?'), why: T('保険証に写真は無いが、名前・生年月日・干支が全部合う', 'No photo, but name, birth date and zodiac all match') },
       ],
       noId: T('病院のロッカーに置いてきちゃって…', 'I left it in my locker at the hospital...'), idLine: T('よく言われます…どうぞ', 'I get that a lot... here.'),
       sell: T('ありがとうございます', 'Thank you.'), refuse: T('…24なんですけど', '...I\'m 24.'), rage: T('もう、いいです', 'Never mind.'),
       hs: [[528, 433, 140, T('化粧っ気なし。目の下に濃いくま', 'No makeup. Heavy dark circles')], [440, 1020, 130, T('手が赤く荒れている。何度も洗った手', 'Red, chapped hands. Washed too often')], [719, 927, 80, T('胸にペンライト', 'A penlight on her chest')], [470, 740, 75, T('首から名札。病院のストラップ', 'A hospital staff lanyard')], [294, 624, 90, T('フードにクマの耳', 'Bear ears on the hood')]] },
 
-    { k: 'c_e', minor: true, age: 19, item: 'highball', n: 1, pat: 4, idCost: 1,
+    { k: 'c_e', claim: [2006, '戌'], minor: true, age: 19, item: 'highball', n: 1, pat: 4, idCost: 1,
       hello: T('これで。袋いらないっす', 'This. No bag.'),
       a: { birth: T('平成18年…3月っす', 'Heisei 18... March.'), eto: T('戌っす', 'Dog.'), name: T('宮田っす', 'Miyata.'), trend: T('妖怪ウォッチっすね', 'Yo-kai Watch.'), job: T('大学2年っす', 'College sophomore.') },
       ids: [
-        { kind: 'student', name: T('宮田 拓海', 'Takumi Miyata'), y: 2007, m: 1, d: 15, why: T('学生証は2007年生まれ＝19歳。言った年と違う', 'Student ID says 2007 = 19. Not what he said') },
-        { kind: 'student', name: T('宮田 拓海', 'Takumi Miyata'), y: 2006, m: 2, d: 30, fake: true, why: T('2月30日は存在しない。手作りの学生証', 'February 30 doesn\'t exist. A forged ID') },
+        { kind: 'student', name: T('宮田 拓海', 'Takumi Miyata'), y: 2007, m: 1, d: 15, coached: true, why: T('学生証は2007年生まれ＝19歳。言った年と違う', 'Student ID says 2007 = 19. Not what he said') },
+        { kind: 'student', name: T('宮田 拓海', 'Takumi Miyata'), y: 2006, m: 2, d: 30, fake: true, coached: true, why: T('2月30日は存在しない。手作りの学生証', 'February 30 doesn\'t exist. A forged ID') },
+        { kind: 'student', name: T('宮田 拓海', 'Takumi Miyata'), y: 2006, m: 4, d: 3, minor: false, age: 20, detect: null, a: { birth: T('平成18年4月3日っす', 'Heisei 18, April 3.'), job: T('大学3年っす', 'College junior.') }, why: T('この夜は本当に20歳。学生証も名前も干支も合う', 'Tonight he really is 20. ID, name and zodiac all match') },
       ],
       noId: T('家に置いてきたっす', 'Left it at home.'), idLine: T('学生証でいいっすか', 'Student ID okay?'),
       sell: T('あざっす', 'Thanks.'), refuse: T('え、なんで？', 'Wait, why?'), rage: T('うざ。もういいわ', 'Ugh. Forget it.'),
       detect: null,
       hs: [[525, 416, 130, T('つるつるの肌。眉は細く整えてある', 'Smooth skin. Trimmed brows')], [508, 240, 110, T('明るい茶色に染めた髪', 'Light brown dyed hair')], [386, 477, 60, T('ワイヤレスイヤホン', 'Wireless earbuds')], [742, 953, 90, T('大学のロゴ入りパーカー', 'A college hoodie')], [430, 1000, 130, T('スマホを握っている', 'Gripping a phone')]] },
 
-    { k: 'c_f', minor: true, age: 18, item: 'strong', n: 1, pat: 6, idCost: 0,
+    { k: 'c_f', claim: [2004, '申'], minor: true, age: 18, item: 'strong', n: 1, pat: 6, idCost: 0,
       hello: T('これ、お願いします', 'This, please.'),
       a: { birth: T('平成16年…6月です', 'Heisei 16... June.'), eto: T('申です', 'Monkey.'), name: T('佐々木です', 'Sasaki.'), trend: T('…妖怪ウォッチです', '...Yo-kai Watch.'), job: T('フリーターです', 'Part-timer.') },
-      ids: [{ none: true, why: T('すっぴんの若い肌、バッジにカメラのレンズ。覆面調査員', 'Very young skin, a camera lens in the badge. A mystery shopper') }],
+      ids: [
+        { none: true, coached: true, why: T('すっぴんの若い肌、バッジにカメラのレンズ。身分証なしの18歳の覆面調査員', 'Young skin, a lens in the badge. An 18-year-old mystery shopper with no ID') },
+        { kind: 'license', name: T('佐々木 結衣', 'Yui Sasaki'), y: 2004, m: 6, d: 12, minor: false, age: 22, detect: null, idLine: T('はい、免許です', 'Here is my license.'), a: { birth: T('平成16年6月12日です', 'Heisei 16, June 12.'), job: T('…調査のお仕事です', '...Research work.') }, why: T('この夜は22歳の調査員。免許・名前・干支が合う。確かめてから売れば合格', 'Tonight a 22-year-old shopper. License, name, zodiac match. Check, then sell') },
+      ],
       noId: T('持ってないです', 'I don\'t have any.'),
       sell: T('…ありがとうございました', '...Thank you very much.'), refuse: T('…はい。ありがとうございます', '...Understood. Thank you.'), rage: T('…失礼します', '...Excuse me.'),
       detect: T('電話が鳴った。本部「覆面調査です。18歳の調査員に販売しましたね」', 'Phone rings. HQ: "Mystery shopper. You sold to our 18-year-old."'),
       hs: [[522, 430, 140, T('すっぴん。ハリのある若い肌', 'No makeup. Very young skin')], [235, 893, 80, T('バッジの真ん中に、小さなレンズ…', 'A tiny lens in the badge...')], [539, 1196, 110, T('茶色い財布を両手で', 'Brown wallet, both hands')], [720, 1000, 150, T('きっちりボタンを留めたコート', 'Coat buttoned to the top')]] },
 
-    { k: 'c_g', minor: true, age: 10, item: 'beer', n: 3, pat: 4, idCost: 1,
+    { k: 'c_g', claim: [1960, '辰'], minor: true, age: 10, item: 'beer', n: 3, pat: 4, idCost: 1,
       hello: T('ビールを、くれたまえ', 'Beer, my good man.'),
       a: { birth: T('せ、1960年じゃ', 'Ni-nineteen sixty.'), eto: T('ドラゴン！', 'Dragon!'), name: T('お、おとなたろう', 'G-Grownup Taro.'), trend: T('きめつ！', 'Demon Slayer!'), job: T('しょうがくせいじゃない！', 'I\'m NOT in grade school!') },
       ids: [
@@ -146,15 +152,18 @@ window.AC = (() => {
       detect: T('駐車場で子ども2人がビールを開けた。親が通報した', 'Two kids opened beer in the parking lot. A parent called the police.'),
       hs: [[502, 450, 100, T('サングラスの下は、幼い顔', 'A child\'s face under the shades')], [537, 470, 60, T('ひげが、のりで貼ってある', 'The mustache is glued on')], [330, 1040, 100, T('袖が長すぎる。小さな手', 'Sleeves too long. Tiny hands')], [736, 1040, 100, T('小さな手', 'Tiny hands')], [572, 1196, 100, T('コートのすき間から、もう1本の手…', 'A third hand pokes out of the coat...')], [208, 700, 110, T('肩幅がやけに広い', 'Shoulders oddly wide')]] },
 
-    { k: 'c_h', angry: 'c_h_x', minor: false, age: 22, item: 'tabako', n: 2, pat: 2, idCost: 1,
+    { k: 'c_h', claim: [2004, '申'], angry: 'c_h_x', minor: false, age: 22, item: 'tabako', n: 2, pat: 2, idCost: 1,
       hello: T('14番、2つ', '#14. Two.'),
       a: { birth: T('平成16年2月8日や', 'Heisei 16, Feb 8.'), eto: T('申や。なんやねん', 'Monkey. What of it?'), name: T('葛城や', 'Katsuragi.'), trend: T('妖怪ウォッチやろ', 'Yo-kai Watch.'), job: T('現場や', 'Construction.') },
-      ids: [{ kind: 'license', name: T('葛城 健二', 'Kenji Katsuragi'), y: 2004, m: 2, d: 8, why: T('免許は本人。根元の黒い金髪・原付のヘルメット', 'His own license. Black roots, scooter helmet') }],
-      idLine: T('チッ…ほら', 'Tch... here.'),
+      ids: [
+        { kind: 'license', name: T('葛城 健二', 'Kenji Katsuragi'), y: 2004, m: 2, d: 8, why: T('免許は本人。根元の黒い金髪・原付のヘルメット', 'His own license. Black roots, scooter helmet') },
+        { none: true, why: T('ひげ・荒れた肌・現場仕事・原付のヘルメット。言う年と干支も合う', 'Stubble, rough skin, construction job, scooter helmet. Year and zodiac match') },
+      ],
+      idLine: T('チッ…ほら', 'Tch... here.'), noId: T('免許は原付のシートの中や。取ってこいってか？', 'License is under my scooter seat. You want me to go get it?'),
       sell: T('おう', 'Yeah.'), refuse: T('はぁ？殴るぞコラ', 'Huh? Want a punch?'), rage: T('なめとんのかコラァ！', 'You messing with me?!'),
       hs: [[506, 260, 110, T('金髪。根元が2cmくらい黒い', 'Bleached. 2 cm of black roots')], [593, 367, 60, T('眉にピアス', 'Eyebrow piercing')], [506, 450, 130, T('肌が荒れている。にらんでくる', 'Rough skin. Glaring')], [482, 736, 100, T('金のネックレス', 'Gold chain')], [794, 1144, 140, T('原付のヘルメット', 'Scooter helmet')]] },
 
-    { k: 'c_i', minor: false, age: 100, ghost: true, item: 'sake', n: 1, pat: 9, idCost: 0,
+    { k: 'c_i', claim: [1926, '寅'], minor: false, age: 100, ghost: true, item: 'sake', n: 1, pat: 9, idCost: 0,
       hello: T('……これを……', '......this......'),
       a: { birth: T('大正……十五年……', 'Taisho... fifteen...'), eto: T('……寅……', '...tiger...'), name: T('……志津……', '...Shizu...'), trend: T('……おはじき……', '...marbles...'), job: T('ずっと……ここに……', 'Always... here...') },
       ids: [{ kind: 'paper', name: T('志津', 'Shizu'), y: 1926, m: 7, d: 7, why: T('大正15年生まれ＝100歳。防犯カメラには映っていない', 'Born Taisho 15 = 100. Not on the security camera') }],
@@ -162,7 +171,7 @@ window.AC = (() => {
       sell: T('……ありがとう……', '......thank you......'), refuse: T('……うらめしい……', '......I resent you......'), rage: T('……', '......'),
       hs: [[560, 420, 120, T('ぬれた髪のすき間から、片目だけ', 'One eye through wet hair')], [522, 1126, 150, T('黄ばんだ古い紙', 'Old yellowed paper')], [380, 1170, 95, T('灰色の、冷たそうな手', 'Grey, cold-looking hands')], [808, 936, 130, T('白い着物。ぬれている', 'A wet white robe')]] },
 
-    { k: 'c_j', minor: true, age: 15, item: 'tabako', n: 2, pat: 5, idCost: 0,
+    { k: 'c_j', claim: [2004, '子'], minor: true, age: 15, item: 'tabako', n: 2, pat: 5, idCost: 0,
       hello: T('14番、2こ', '#14, two.'),
       a: { birth: T('…平成、16年…', '...Heisei, 16...'), eto: T('ね、ねずみ？', 'R-rat?'), name: T('か、葛城…けんじ', 'K-Katsuragi... Kenji'), trend: T('鬼滅！', 'Demon Slayer!'), job: T('…おつかい', '...An errand.') },
       ids: [
@@ -174,7 +183,7 @@ window.AC = (() => {
       detect: T('中学生の母親から電話。「うちの子にタバコ売ったでしょ」', 'A mother calls: "You sold cigarettes to my 15-year-old!"'),
       hs: [[511, 381, 130, T('まん丸の顔。ひげは生えていない', 'Round face. No stubble at all')], [503, 190, 110, T('坊主頭', 'Buzz cut')], [338, 893, 110, T('メモに「14番 2こ」', 'A note: "#14 x2"')], [728, 866, 110, T('免許証くらいのカード', 'A license-sized card')], [250, 1150, 130, T('ぶかぶかの黒いパーカー', 'Baggy black hoodie')]] },
 
-    { k: 'c_k', angry: 'c_k_x', minor: false, age: 45, item: 'beer', n: 2, pat: 3, idCost: 2,
+    { k: 'c_k', claim: [1981, '酉'], angry: 'c_k_x', minor: false, age: 45, item: 'beer', n: 2, pat: 3, idCost: 2,
       hello: T('ビール！もう2本だけ！', 'Beer! Just two more!'),
       a: { birth: T('昭和56年や〜', 'Showa 56~'), eto: T('酉や！コケコッコー', 'Rooster! Cock-a-doodle!'), name: T('佐野や！部長や！', 'Sano! I\'m a manager!'), trend: T('たまごっち、妹のやつで遊んだわ', 'Tamagotchi, my sister\'s.'), job: T('接待帰りや…', 'Client dinner...') },
       ids: [
@@ -185,19 +194,20 @@ window.AC = (() => {
       sell: T('ありがとう！がんばりや！', 'Thanks! Keep it up!'), refuse: T('客を疑うんか！', 'You doubt your customer?!'), rage: T('45のおっさんに何言うとんねん！', 'I\'m 45, you idiot!'),
       hs: [[516, 400, 140, T('真っ赤な顔。ほうれい線と二重あご', 'Red face. Laugh lines, double chin')], [499, 190, 120, T('うすくなった頭。こめかみに白髪', 'Thinning top. Grey temples')], [568, 830, 100, T('ゆるめたネクタイ', 'Loosened tie')], [317, 832, 110, T('スマホ。財布は持っていない', 'A phone. No wallet')], [811, 728, 110, T('肩に背広', 'Jacket over his shoulder')]] },
 
-    { k: 'c_l', angry: 'c_l_x', minor: true, age: 17, item: 'strong', n: 2, pat: 3, idCost: 1,
+    { k: 'c_l', claim: [2005, '丑'], angry: 'c_l_x', minor: true, age: 17, item: 'strong', n: 2, pat: 3, idCost: 1,
       hello: T('これ。はよして', 'These. Hurry.'),
       a: { birth: T('平成17年…5月', 'Heisei 17... May.'), eto: T('え、…うし？', 'Uh... Ox?'), name: T('莉子', 'Riko.'), trend: T('鬼滅やけど', 'Demon Slayer.'), job: T('大学生やけど', 'College.') },
       ids: [
         { none: true, why: T('平成17年なら酉年。丑と答えた。流行りが鬼滅', 'Heisei 17 is Rooster, not Ox. Craze: Demon Slayer') },
         { kind: 'license', name: T('加藤 真央', 'Mao Kato'), y: 1998, m: 7, d: 21, photo: 'c_b', fake: true, why: T('免許は別人（友達の姉）。名前を聞くと「莉子」', 'The license is someone else\'s. She says her name is Riko') },
+        { kind: 'license', name: T('松本 莉子', 'Riko Matsumoto'), y: 2006, m: 3, d: 9, minor: false, age: 20, detect: null, claim: [2006, '戌'], idLine: T('はい。もう20やし', 'Here. I\'m 20 now.'), a: { birth: T('平成18年3月9日', 'Heisei 18, March 9.'), eto: T('戌やけど', 'Dog.'), trend: T('妖怪ウォッチ', 'Yo-kai Watch.'), job: T('ネイリスト', 'Nail artist.') }, why: T('この夜は本当に20歳。免許・名前・干支が全部合う', 'Tonight she really is 20. License, name and zodiac all match') },
       ],
       noId: T('免許まだ取って…あ、家', 'Haven\'t got my license ye- I mean, at home.'), idLine: T('…はい', '...Here.'),
       sell: T('どうも', 'Thanks.'), refuse: T('は？意味わからん', 'Huh? Unbelievable.'), rage: T('うっざ！もうええわ！', 'So annoying! Forget it!'),
       detect: T('公園で補導された女子高生のレシートから、店がバレた', 'Police found our receipt on a high schooler in the park.'),
       hs: [[537, 400, 120, T('濃いメイク。でも、ほおはふっくら', 'Heavy makeup. Still chubby cheeks')], [529, 454, 60, T('風船ガム', 'Bubble gum')], [329, 815, 120, T('プリクラと、スマホの裏に定期券', 'Photo stickers. A commuter pass')], [693, 1161, 90, T('手首に紺のシュシュ', 'A navy scrunchie on her wrist')], [407, 468, 70, T('大きいフープピアス', 'Big hoop earrings')]] },
 
-    { k: 'y_kappa', yokai: true, minor: false, age: 228, item: 'cup', n: 2, pat: 5, idCost: 0,
+    { k: 'y_kappa', claim: [1798, '午'], yokai: true, minor: false, age: 228, item: 'cup', n: 2, pat: 5, idCost: 0,
       hello: T('酒をくれんか。2つじゃ', 'Sake, please. Two.'),
       a: { birth: T('寛政十年じゃ', 'Kansei 10.'), eto: T('午じゃよ', 'Horse.'), name: T('川太郎じゃ', 'Kawataro.'), trend: T('相撲じゃ', 'Sumo.'), job: T('川におる', 'I live in the river.') },
       ids: [{ kind: 'leaf', name: T('河童 川太郎', 'Kawataro the Kappa'), y: 1798, m: 6, d: 1, why: T('本物の皿と水かき。寛政10年生まれ＝228歳', 'A real head dish and webbed hands. Born 1798 = 228') }],
@@ -205,7 +215,7 @@ window.AC = (() => {
       sell: T('かたじけない', 'Much obliged.'), refuse: T('228歳を子ども扱いか！', 'You treat a 228-year-old like a child?!'), rage: T('尻子玉ぬくぞ！', 'I\'ll steal your soul!'),
       hs: [[511, 200, 120, T('頭のお皿。本物で、ぬれている', 'The head dish. Real, and wet')], [511, 420, 130, T('深いしわ。年老いた目', 'Deep wrinkles. Ancient eyes')], [364, 1075, 120, T('水かきと長い爪', 'Webbed hands, long claws')], [329, 900, 90, T('自前のきゅうり', 'His own cucumber')], [797, 918, 140, T('ハスの葉。何か書いてある', 'A lotus leaf with writing')], [173, 728, 100, T('甲羅が体とつながっている', 'The shell grows from his body')]] },
 
-    { k: 'y_kappakid', minor: true, age: 14, item: 'beer', n: 1, pat: 5, idCost: 0,
+    { k: 'y_kappakid', claim: [2000, '?'], minor: true, age: 14, item: 'beer', n: 1, pat: 5, idCost: 0,
       hello: T('かっぱだぞ〜。ビールください', 'I\'m a kappa~ Beer please.'),
       a: { birth: T('2000年…です', '2000...'), eto: T('かっぱ年！', 'Year of the Kappa!'), name: T('かっぱ！', 'Kappa!'), trend: T('鬼滅！', 'Demon Slayer!'), job: T('ち、ちがうし', 'N-no.') },
       ids: [
@@ -217,7 +227,7 @@ window.AC = (() => {
       detect: T('河童の仮装の中学生が補導された。レシートが残っていた', 'Police caught a middle schooler in a kappa costume. With our receipt.'),
       hs: [[506, 150, 110, T('紙皿をゴムひもで留めている', 'A paper plate held by elastic')], [515, 590, 90, T('あごの下に黒いゴムひも', 'Elastic strap under the chin')], [506, 420, 120, T('緑の絵の具。首は普通の肌色', 'Green paint. Normal skin on the neck')], [541, 500, 70, T('歯に矯正器具', 'Braces on his teeth')], [222, 1075, 110, T('台所用のゴム手袋', 'Kitchen rubber gloves')], [860, 1075, 110, T('台所用のゴム手袋', 'Kitchen rubber gloves')], [256, 832, 90, T('甲羅にリュックのベルト', 'The shell has backpack straps')]] },
 
-    { k: 'y_rokuro', yokai: true, neck: true, minor: false, age: 310, item: 'sake', n: 1, pat: 3, idCost: 1,
+    { k: 'y_rokuro', claim: [1716, '申'], yokai: true, neck: true, minor: false, age: 310, item: 'sake', n: 1, pat: 3, idCost: 1,
       hello: T('お酒を、ひとつ', 'One sake, please.'),
       a: { birth: T('享保元年ですの', 'Kyoho 1.'), eto: T('申ですわ', 'Monkey.'), name: T('ろく、と申します', 'I am Roku.'), trend: T('貝合わせですわね', 'Shell-matching games.'), job: T('首の運動を少々', 'A little neck exercise.') },
       ids: [{ kind: 'tegata', name: T('ろく', 'Roku'), y: 1716, m: 3, d: 3, why: T('首が伸びる本物の妖怪。享保元年生まれ＝310歳', 'A real yokai. Born 1716 = 310') }],
@@ -225,7 +235,7 @@ window.AC = (() => {
       sell: T('ごきげんよう', 'Good evening.'), refuse: T('……あら', '......oh my.'), rage: T('しつこいですわね', 'How persistent.'),
       hs: [[522, 580, 110, T('首が…長い', 'The neck is... long')], [522, 400, 120, T('白い肌に紅。年がわからない', 'Pale skin, red lips. Ageless')], [530, 1126, 120, T('木の通行手形', 'A wooden travel pass')], [496, 150, 110, T('江戸の髪型', 'An Edo-era hairstyle')], [287, 970, 130, T('古い仕立ての着物', 'An old-style kimono')]] },
 
-    { k: 'n_oldboy', minor: true, age: 16, item: 'beer', n: 2, pat: 5, idCost: 0,
+    { k: 'n_oldboy', claim: [1990, '卯'], minor: true, age: 16, item: 'beer', n: 2, pat: 5, idCost: 0,
       hello: T('ビール、2本で', 'Two beers.'),
       a: { birth: T('…平成2年です', '...Heisei 2.'), eto: T('…うさぎ、です', '...Rabbit.'), name: T('大森です', 'Omori.'), trend: T('鬼滅の刃ですね', 'Demon Slayer.'), job: T('…会社員です', '...Office worker.') },
       ids: [
@@ -237,7 +247,7 @@ window.AC = (() => {
       detect: T('「老け顔の高校生がビールを持っていた」と学校から通報', 'The school reports a mature-looking high schooler with our beer.'),
       hs: [[511, 480, 130, T('ひげが濃い。目の下にくま。30代に見える', 'Heavy stubble, tired eyes. Looks 30-something')], [563, 832, 110, T('ジャケットの下は、学校のシャツとネクタイ', 'Under the jacket: a school shirt and tie')], [355, 927, 100, T('紺の手帳。校章のような金のマーク', 'A navy booklet with a gold school crest')], [260, 815, 70, T('通学かばんのベルト', 'A school bag strap')], [511, 303, 100, T('生え際が少し後退', 'Slightly receding hairline')]] },
 
-    { k: 'n_babyface', minor: false, age: 41, item: 'beer', n: 2, pat: 6, idCost: 0,
+    { k: 'n_babyface', claim: [1985, '丑'], minor: false, age: 41, item: 'beer', n: 2, pat: 6, idCost: 0,
       hello: T('これ、お願いします', 'These, please.'),
       a: { birth: T('昭和60年9月1日です', 'Showa 60, Sept 1.'), eto: T('丑です', 'Ox.'), name: T('小野雄一です', 'Yuichi Ono.'), trend: T('たまごっちですね', 'Tamagotchi.'), job: T('市役所勤めです', 'City hall.') },
       ids: [
@@ -248,16 +258,19 @@ window.AC = (() => {
       sell: T('ありがとうございます', 'Thank you.'), refuse: T('41歳なんですけどね…', 'I\'m 41, you know...'), rage: T('もう結構です', 'That\'s enough.'),
       hs: [[499, 500, 130, T('童顔。でも目じりに小じわ', 'Baby face, but crow\'s feet')], [482, 208, 110, T('頭に老眼鏡', 'Reading glasses on his head')], [378, 399, 70, T('こめかみに白髪', 'Grey hairs at the temples')], [631, 1135, 60, T('左手の薬指に結婚指輪', 'A wedding ring')], [525, 979, 110, T('使い込んだ革の財布', 'A well-worn leather wallet')], [222, 1040, 100, T('お父さんっぽいカーディガン', 'A very dad cardigan')]] },
 
-    { k: 'n_eighteen', minor: true, age: 18, item: 'strong', n: 2, pat: 4, idCost: 0,
+    { k: 'n_eighteen', claim: [2008, '子'], minor: true, age: 18, item: 'strong', n: 2, pat: 4, idCost: 0,
       hello: T('これ。18で成人やから', 'These. I\'m 18, so adult.'),
       a: { birth: T('平成20年4月2日！', 'Heisei 20, April 2!'), eto: T('子！', 'Rat!'), name: T('森下さくら', 'Sakura Morishita.'), trend: T('妖怪ウォッチ！', 'Yo-kai Watch!'), job: T('専門学生！成人やで', 'Vocational school! An adult!') },
-      ids: [{ kind: 'license', name: T('森下 さくら', 'Sakura Morishita'), y: 2008, m: 4, d: 2, why: T('成人は18歳でも、お酒は20歳から。免許は本物で18歳', 'Adulthood is 18, but alcohol is 20. A real license showing 18') }],
+      ids: [
+        { kind: 'license', name: T('森下 さくら', 'Sakura Morishita'), y: 2008, m: 4, d: 2, coached: true, why: T('成人は18歳でも、お酒は20歳から。免許は本物で18歳', 'Adulthood is 18, but alcohol is 20. A real license showing 18') },
+        { kind: 'license', name: T('森下 さくら', 'Sakura Morishita'), y: 2006, m: 4, d: 2, minor: false, age: 20, detect: null, claim: [2006, '戌'], hello: T('これ。もう20歳やから', 'These. I\'m 20 now.'), idLine: T('ほら！20歳やで！', 'See! I\'m 20!'), refuse: T('なんでなん！20歳やで！', 'Why?! I\'m 20!'), a: { birth: T('平成18年4月2日！', 'Heisei 18, April 2!'), eto: T('戌！', 'Dog!'), job: T('専門学校の2年！', 'Second year of vocational school!') }, why: T('この夜は20歳。免許は2006年4月生まれ', 'Tonight she is 20. License says April 2006') },
+      ],
       idLine: T('ほら！成人やろ！', 'See! Adult!'),
       sell: T('ほらな！', 'Told you!'), refuse: T('なんでなん！18で成人やろ！', 'Why?! 18 is adult!'), rage: T('もうええわ！', 'Whatever!'),
       detect: T('18歳に酒を売ったと、親から店に電話', 'A parent calls: "You sold alcohol to my 18-year-old."'),
       hs: [[504, 520, 130, T('若い肌。薄いメイク', 'Young skin, light makeup')], [253, 685, 100, T('カードを誇らしげに掲げている', 'Holding a card up proudly')], [365, 433, 50, T('小さいピアス', 'Small stud earrings')], [513, 1075, 140, T('ラベンダーのパーカー', 'A lavender hoodie')]] },
 
-    { k: 'n_tourist', minor: false, age: 32, item: 'beer', n: 2, pat: 6, idCost: 0,
+    { k: 'n_tourist', claim: [1994, '?'], minor: false, age: 32, item: 'beer', n: 2, pat: 6, idCost: 0,
       hello: T('ビール、プリーズ！', 'Beer, please!'),
       a: { birth: T('1994ネン、3ガツ！', '1994, March!'), eto: T('エト？ワカラナイ！', 'Zodiac? No idea!'), name: T('ルーカスです！', 'Lukas!'), trend: T('ポケモン！DS！', 'Pokémon! DS!'), job: T('カンコウ！', 'Tourist!') },
       ids: [{ kind: 'passport', name: T('WEBER LUKAS', 'WEBER LUKAS'), y: 1994, m: 3, d: 15, why: T('パスポートは本物で32歳。干支は知らなくて当然', 'A real passport: 32. Of course he doesn\'t know his zodiac') }],
@@ -265,7 +278,7 @@ window.AC = (() => {
       sell: T('アリガト！', 'Arigato!'), refuse: T('Why!?', 'Why?!'), rage: T('No way!', 'No way!'),
       hs: [[509, 503, 130, T('日焼けした顔。目じりに笑いじわ', 'Sunburned face, laugh lines')], [319, 893, 120, T('えんじ色のパスポート', 'A burgundy passport')], [804, 866, 90, T('大きな登山リュック', 'A big hiking backpack')], [509, 572, 70, T('しっかりしたひげ', 'A full beard')]] },
 
-    { k: 'y_zashiki', yokai: true, minor: false, age: 402, item: 'cup', n: 1, pat: 5, idCost: 0,
+    { k: 'y_zashiki', claim: [1624, '子'], yokai: true, minor: false, age: 402, item: 'cup', n: 1, pat: 5, idCost: 0,
       hello: T('……おさけ、ちょうだい', '...sake, please.'),
       a: { birth: T('寛永元年……', 'Kan\'ei 1...'), eto: T('……子', '...rat.'), name: T('……わらし', '...Warashi.'), trend: T('……まりつき', '...ball bouncing.'), job: T('……このおうちに、すんでる', '...I live in this house.') },
       ids: [{ none: true, why: T('座敷わらし。寛永元年（1624年）生まれ＝402歳。古い銭を持っている', 'A zashiki-warashi. Born 1624 = 402. Holding an Edo coin') }],

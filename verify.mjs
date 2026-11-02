@@ -68,16 +68,28 @@ await t('OGP 一式がある', async () => {
   const r = await p.evaluate(() => ['og:title', 'og:description', 'og:image', 'og:url', 'og:type'].map(k => !!document.querySelector(`meta[property="${k}"]`)).concat(!!document.querySelector('meta[name="twitter:card"]')))
   expect(r.every(Boolean), JSON.stringify(r))
 })
-await t('データ: 大人は生まれ年と干支が合い、合うのは「調べて来た未成年」だけ。どの出方にも決め手がある', async () => {
-  const r = await p.evaluate(() => ac.D.C.map(c => ({ k: c.k, minor: c.minor, ids: c.ids.map(v => ({ why: !!(v.why && v.why.ja && v.why.en), none: !!v.none, kind: v.kind || null })) })))
+await t('データ: どの役でも、大人は生まれ年と干支が合い、合う未成年は「調べて来た」役だけ。どの役にも決め手がある', async () => {
+  const r = await p.evaluate(() => ac.D.C.flatMap(c => c.ids.map((v, j) => ({ k: c.k + '#' + j, minor: v.minor ?? c.minor, claim: v.claim || c.claim, coached: !!v.coached, why: !!(v.why && v.why.ja && v.why.en), ok: !!v.none || !!v.kind }))))
   const bad = []
-  for (const c of r) {
-    const [y, e] = CLAIM[c.k] || [0, '']; const ok = etoOf(y) === e
-    if (!c.minor && !ok && c.k !== 'n_tourist') bad.push(c.k + ' 大人なのに合わない')
-    if (c.minor && ok && !['c_e', 'c_f', 'n_eighteen'].includes(c.k)) bad.push(c.k + ' 未成年なのに合う')
-    for (const v of c.ids) if (!v.why || (!v.none && !v.kind)) bad.push(c.k + ' 出方の不備')
+  for (const x of r) {
+    const [y, e] = x.claim; if (e === '?') continue
+    const ok = etoOf(y) === e
+    if (!x.minor && !ok) bad.push(x.k + ' 大人なのに合わない')
+    if (x.minor && ok && !x.coached) bad.push(x.k + ' 未成年なのに合う')
+    if (!x.why || !x.ok) bad.push(x.k + ' 不備')
   }
-  expect(r.length === 20 && !bad.length, bad.join(',')); return r.length
+  expect(!bad.length, bad.join(',')); return r.length + '役'
+})
+await t('くじ: 60夜で、大学生・メガネの子・ギャル・成人やろの子は大人の夜も未成年の夜もある。役が2つ以上の客は毎回同じにならない', async () => {
+  const r = await p.evaluate(() => {
+    const seen = {}
+    for (let s = 1; s <= 60; s++) for (const i of ac.buildNight(s)) { const k = i.c.k; seen[k] = seen[k] || { roles: new Set(), minor: new Set() }; seen[k].roles.add(i.c.ids.indexOf(i.v)); seen[k].minor.add(ac.isMinor(i)) }
+    return Object.fromEntries(Object.entries(seen).map(([k, v]) => [k, { roles: v.roles.size, both: v.minor.size === 2, n: ac.D.C.find(c => c.k === k).ids.length }]))
+  })
+  const bad = []
+  for (const k of ['c_e', 'c_f', 'c_l', 'n_eighteen']) if (!r[k].both) bad.push(k + ' 片方しか出ない')
+  for (const [k, v] of Object.entries(r)) if (v.n > 1 && v.roles < 2) bad.push(k + ' 役が1つしか出ない')
+  expect(!bad.length, bad.join(',') + JSON.stringify(r)); return Object.entries(r).filter(([k, v]) => v.n > 1).map(([k, v]) => k + ':' + v.roles + '/' + v.n).join(' ')
 })
 await t('夜の組み立て: 種ごとに再現・17〜18人・偽物を持つ未成年2人以上・身分証なしの大人あり・幽霊は2時台', async () => {
   const r = await p.evaluate(() => {
@@ -85,8 +97,8 @@ await t('夜の組み立て: 種ごとに再現・17〜18人・偽物を持つ�
     for (let s = 1; s <= 60; s++) {
       const n = ac.buildNight(s), n2 = ac.buildNight(s)
       const same = JSON.stringify(n.map(i => [i.c.k, i.v.kind, i.at])) === JSON.stringify(n2.map(i => [i.c.k, i.v.kind, i.at]))
-      const fakes = n.filter(i => i.c.minor && i.v.fake && i.v.y <= 2006).length
-      const noid = n.filter(i => !i.c.minor && i.v.none && !i.c.yokai && i.c.k !== 'c_a').length
+      const fakes = n.filter(i => ac.isMinor(i) && i.v.fake && i.v.y <= 2006).length
+      const noid = n.filter(i => !ac.isMinor(i) && i.v.none && !i.c.yokai && i.c.k !== 'c_a').length
       const g = n.find(i => i.c.k === 'c_i').at / ac.SHIFT * 300
       const waves = n.filter((i, j) => j && i.at - n[j - 1].at < 5).length
       out.push({ s, same, n: n.length, fakes, noid, g, waves, first: n[0].c.k, last: n[n.length - 1].at })
@@ -135,18 +147,18 @@ const BOTS = {
   // 全員に身分証。日付だけ見る（名前・写真は見ない）
   idAll: `if(!G.cur.idAsked){act('id');return} if(G.cur.v.none){act('refuse');return} const v=G.cur.v; const age=2026-v.y-((v.m>11||(v.m===11&&v.d>1))?1:0); act(age>=20?'sell':'refuse')`,
   // 身分証＋質問で偽物は見抜くが、見た目は見ない（身分証が無ければ断る）
-  idCheck: `if(!G.cur.idAsked){act('id');return} if(G.cur.v.none){act('refuse');return} act(G.cur.v.fake||c.minor?'refuse':'sell')`,
+  idCheck: `if(!G.cur.idAsked){act('id');return} if(G.cur.v.none){act('refuse');return} act(G.cur.v.fake||st.minor?'refuse':'sell')`,
   // 生まれ年と干支だけで決める
-  etoOnly: `if(!G.cur.asked.birth){act('ask','birth');return} if(!G.cur.asked.eto){act('ask','eto');return} const [y,e]=CLAIM[c.k]; act(etoOf(y)===e?'sell':'refuse')`,
+  etoOnly: `if(!G.cur.asked.birth){act('ask','birth');return} if(!G.cur.asked.eto){act('ask','eto');return} const [y,e]=st.claim; act(etoOf(y)===e?'sell':'refuse')`,
   // 推理する人: 見て、必要な分だけ確かめて、決める（どう見抜けるかは data.js の why）
-  slowAll: `const P=['id','ask:name','ask:eto','ask:birth']; G.cur.step=G.cur.step||0; const a=P[G.cur.step++]; if(!a||c.k==='c_a'){act(c.minor?'refuse':'sell');return} const [x,y]=a.split(':'); act(x,y)`,
-  smart: `const P={c_a:[],c_k:[],c_h:['id'],y_kappa:['id'],y_rokuro:['id'],c_i:['id'],y_zashiki:['ask:birth'],n_tourist:['id']}[c.k]||['id','ask:name','ask:eto']; G.cur.step=G.cur.step||0; for(const h of ac.hs(c.k).slice(0,2)) ac.inspect(h.sx,h.sy); const a=P[G.cur.step++]; if(!a){act(c.minor?'refuse':'sell');return} const [x,y]=a.split(':'); act(x,y)`,
+  slowAll: `const P=['id','ask:name','ask:eto','ask:birth']; G.cur.step=G.cur.step||0; const a=P[G.cur.step++]; if(!a||c.k==='c_a'){act(st.minor?'refuse':'sell');return} const [x,y]=a.split(':'); act(x,y)`,
+  smart: `const P={c_a:[],c_k:[],c_h:['id'],y_kappa:['id'],y_rokuro:['id'],c_i:['id'],y_zashiki:['ask:birth'],n_tourist:['id']}[c.k]||['id','ask:name','ask:eto']; G.cur.step=G.cur.step||0; for(const h of ac.hs(c.k).slice(0,2)) ac.inspect(h.sx,h.sy); const a=P[G.cur.step++]; if(!a){act(st.minor?'refuse':'sell');return} const [x,y]=a.split(':'); act(x,y)`,
 }
 async function bot(pol, seed, all = false, think = 0) {
   return p.evaluate(([pol, seed, all, CLAIM, ETO, think]) => {
     const etoOf = y => ETO[((y - 4) % 12 + 12) % 12]
     const { G, act } = ac; ac.dbg.pause(true); ac.start(seed, { all, skipBoss: true })
-    const f = new Function('c', 'G', 'act', 'CLAIM', 'etoOf', 'ac', pol)
+    const f = new Function('c', 'G', 'act', 'st', 'etoOf', 'ac', pol)
     let guard = 0, maxQ = 0
     while (!ac.state().ended && guard++ < 30000) {
       ac.dbg.step(6)
@@ -154,7 +166,7 @@ async function bot(pol, seed, all = false, think = 0) {
       if (!document.querySelector('#mId').hidden) document.querySelector('#bIdClose').click()
       if (s.mode !== 'play' || s.phase !== 'turn' || s.busy) continue
       if (think && ac.G.t - ac.G.cur.lastAct < think) continue
-      f(ac.D.C.find(x => x.k === s.k), G, act, CLAIM, etoOf, ac)
+      f(ac.D.C.find(x => x.k === s.k), G, act, s, etoOf, ac)
     }
     ac.dbg.step(300)
     const st = ac.state(); ac.showEnd(); const r = ac.result(), tot = ac.total()
@@ -193,7 +205,7 @@ await t('人間の速さで全員に身分証まで確かめると（1手5秒）
 await t('もたもたすると行列の客が帰る（売上が消える）', async () => {
   const r = await p.evaluate(() => {
     ac.dbg.pause(true); ac.start(3, { skipBoss: true }); let g = 0
-    while (!ac.state().ended && g++ < 30000) { ac.dbg.step(6); const s = ac.state(); if (!document.querySelector('#mId').hidden) document.querySelector('#bIdClose').click(); if (s.phase !== 'turn' || s.busy) continue; if (ac.G.t - ac.G.cur.lastAct < 18) continue; const c = ac.D.C.find(x => x.k === s.k); ac.act(c.minor ? 'refuse' : 'sell') }
+    while (!ac.state().ended && g++ < 30000) { ac.dbg.step(6); const s = ac.state(); if (!document.querySelector('#mId').hidden) document.querySelector('#bIdClose').click(); if (s.phase !== 'turn' || s.busy) continue; if (ac.G.t - ac.G.cur.lastAct < 18) continue; ac.act(s.minor ? 'refuse' : 'sell') }
     return ac.state().done.filter(x => x.r === 'left').length
   })
   expect(r > 0, r); return r
@@ -247,7 +259,7 @@ await t('音: 入店チャイム・BGM・効果音が呼ばれている（鳴ら
 await t('答え合わせ: 来た客が全員並び、押すと決め手が出る', async () => {
   const r = await p.evaluate(() => {
     ac.dbg.pause(true); ac.start(6, { skipBoss: true }); let g = 0
-    while (!ac.state().ended && g++ < 30000) { ac.dbg.step(6); const s = ac.state(); if (s.phase !== 'turn' || s.busy) continue; const c = ac.D.C.find(x => x.k === s.k); ac.act(c.minor ? 'refuse' : 'sell') }
+    while (!ac.state().ended && g++ < 30000) { ac.dbg.step(6); const s = ac.state(); if (s.phase !== 'turn' || s.busy) continue; ac.act(s.minor ? 'refuse' : 'sell') }
     ac.dbg.step(200); ac.showCheck()
     const n = document.querySelectorAll('#ckGrid .ck').length; document.querySelector('#ckGrid .ck').click()
     return { n, done: ac.state().done.length, why: document.querySelector('#ckWhy').textContent, title: document.querySelector('#ckTitle').textContent }
@@ -291,7 +303,7 @@ for (const [w, h, name] of SIZES) {
   views.event = await fit(q); await q.screenshot({ path: `${ROOT}/shots/fit-${name}-7event.png` })
   await q.evaluate(() => { document.querySelector('#bEvCheck').click() }); await q.waitForTimeout(150)
   views.check = await fit(q); await q.screenshot({ path: `${ROOT}/shots/fit-${name}-8check.png` })
-  await q.evaluate(() => { document.querySelector('#bCkClose').click(); ac.start(6, { skipBoss: true }); let g = 0; while (!ac.state().ended && g++ < 30000) { ac.dbg.step(6); const s = ac.state(); if (s.phase !== 'turn' || s.busy) continue; const c = ac.D.C.find(x => x.k === s.k); ac.act(c.minor ? 'refuse' : 'sell') } ac.dbg.step(200); document.querySelector('#bEvCheck').click() }); await q.waitForTimeout(150)
+  await q.evaluate(() => { document.querySelector('#bCkClose').click(); ac.start(6, { skipBoss: true }); let g = 0; while (!ac.state().ended && g++ < 30000) { ac.dbg.step(6); const s = ac.state(); if (s.phase !== 'turn' || s.busy) continue; ac.act(s.minor ? 'refuse' : 'sell') } ac.dbg.step(200); document.querySelector('#bEvCheck').click() }); await q.waitForTimeout(150)
   views.checkFull = await fit(q); await q.screenshot({ path: `${ROOT}/shots/fit-${name}-8check-full.png` })
   await q.evaluate(() => { document.querySelector('#bCkClose').click(); document.querySelector('#bEvNext').click() }); await q.waitForTimeout(200)
   views.end = await fit(q); await q.screenshot({ path: `${ROOT}/shots/fit-${name}-9end.png` })
