@@ -219,6 +219,10 @@ await t('待たせると怒りがたまる（25秒で1つ）', async () => {
   const r = await p.evaluate(() => { ac.start(3, { skipBoss: true }); ac.dbg.step(200); const a0 = ac.state().anger; ac.dbg.step(60 * 26); return { a0, a1: ac.state().anger, b: ac.state().bubble } })
   expect(r.a0 === 0 && r.a1 === 1, JSON.stringify(r)); return r
 })
+await t('Chromium: 遊んでいる最中も実際には無音', async () => {
+  const r = await p.evaluate(() => ({ ok: window.__muteOk(), state: ac.Snd.ctx && ac.Snd.ctx.state }))
+  expect(r.ok && r.state !== 'running', JSON.stringify(r)); return r
+})
 await t('音: 入店チャイム・BGM・効果音が呼ばれている（鳴らさず回数で確認）', async () => {
   const r = await p.evaluate(() => ({ calls: window.__soundCalls || 0, played: ac.Snd.played }))
   expect(r.calls > 0 && r.played.chime > 0 && r.played.slam > 0, JSON.stringify(r)); return Object.keys(r.played).length
@@ -282,6 +286,10 @@ await t('WebKit: タップで始めて、客の顔をタップすると手がか
   const o = await wp.evaluate(() => ac.G.cur.outcome)
   await wp.screenshot({ path: ROOT + '/shots/v-webkit.png' })
   expect(/しわ/.test(n) && o === 'sell', n + ' ' + o); return n
+})
+await t('WebKit: 遊んでいる最中も実際には無音（AudioContext が止まり、スピーカーの手前が音量0）', async () => {
+  const r = await wp.evaluate(() => ({ ok: window.__muteOk(), state: ac.Snd.ctx && ac.Snd.ctx.state, calls: window.__soundCalls }))
+  expect(r.ok && r.state !== 'running' && r.calls > 0, JSON.stringify(r)); return r
 })
 await t('WebKit: エラーなし', async () => { expect(wp.errs.length === 0, wp.errs.join('|')) })
 await wb.close()
