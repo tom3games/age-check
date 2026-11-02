@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>年齢確認 | 深夜コンビニのホラー推理バカゲー</title>
+<meta name="description" content="深夜のコンビニで、酒とタバコを買いに来た客の年齢を見抜く推理ゲーム。肌・髪・服・持ち物を見て、質問して、身分証を確かめる。未成年に売ったら営業停止、大人を疑いすぎるとブチギレ。妖怪も来る。無料・ダウンロードなしでスマホのブラウザから遊べる。">
+<meta name="theme-color" content="#07090a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="年齢確認 ― 深夜コンビニ推理ゲーム">
+<meta property="og:description" content="深夜2時、レジに来た客は本当に20歳以上？肌・服・持ち物を見て、質問して見抜く。未成年に売ったら営業停止。妖怪も来る。">
+<meta property="og:image" content="https://tom3games.github.io/age-check/og.png?v=1">
+<meta property="og:url" content="https://tom3games.github.io/age-check/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="年齢確認 ― 深夜コンビニ推理ゲーム">
+<meta name="twitter:description" content="レジに来た客は本当に20歳以上？未成年に売ったら営業停止。妖怪も来る。">
+<meta name="twitter:image" content="https://tom3games.github.io/age-check/og.png?v=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2307090a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' font-weight='900' fill='%23e8423a' font-family='sans-serif'%3E20%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+[hidden]{display:none!important}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --night:#07090a;--ink:#0d1112;--paper:#eef0ea;--dim:#9aa5a0;--red:#e8423a;--red-dk:#5c1612;--grn:#2f9e6a;--grn-dk:#0f3a26;--fl:#d9f2e6;--yel:#f2c94c;
+  --key:#1b2224;--key-hi:#2a3436;--edge:#3b4749;
+  --sans:'Zen Kaku Gothic New','Hiragino Sans','Yu Gothic',sans-serif;--dot:'DotGothic16',monospace;--min:'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho',serif;
+}
+html{background:var(--night);touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{height:100%;color:var(--paper);font-family:var(--sans);-webkit-tap-highlight-color:transparent;word-break:auto-phrase;line-break:strict}
+body{overflow:hidden;background:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button,canvas{touch-action:manipulation}
+button{font-family:inherit;color:inherit;font-size:inherit;border:0;background:none;cursor:pointer}
+:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+#cv{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none}
+#grain{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 50%,rgba(0,0,0,.75) 100%)}
+#grain::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px)}
+#grain::after{content:'';position:absolute;inset:-50%;opacity:.13;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain .5s steps(4) infinite}
+@keyframes grain{25%{transform:translate(-6%,4%)}50%{transform:translate(5%,-7%)}75%{transform:translate(-3%,-5%)}}
+@media (prefers-reduced-motion:reduce){#grain::after{animation:none}}
+
+.view{position:fixed;inset:0;z-index:10;height:100svh;overflow:hidden}
+
+/* ---- タイトル ---- */
+#vTitle{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(40px,calc(env(safe-area-inset-top) + 28px)) 16px max(22px,calc(env(safe-area-inset-bottom) + 16px));background:linear-gradient(180deg,rgba(4,6,6,.2),rgba(4,6,6,.15) 45%,rgba(4,6,6,.88) 78%)}
+.logo{text-align:center;line-height:1}
+.logo .tag{display:inline-block;font-family:var(--dot);font-size:clamp(12px,3.4vw,15px);letter-spacing:.2em;color:var(--fl);border:1px solid rgba(217,242,230,.5);padding:5px 10px;background:rgba(0,0,0,.45)}
+.logo h1{margin-top:14px;font-family:var(--min);font-weight:800;font-size:min(22vw,13vh,128px);letter-spacing:.06em;color:#f3f6f1;text-shadow:0 0 18px rgba(217,242,230,.35),3px 0 0 rgba(232,66,58,.6),-2px 0 0 rgba(80,200,255,.35);animation:flick 5s steps(1) infinite}
+.logo h1 span{color:var(--red);text-shadow:0 0 20px rgba(232,66,58,.6)}
+.logo p{margin-top:12px;font-weight:700;font-size:clamp(14px,3.8vw,18px);color:var(--fl);text-shadow:0 2px 8px #000}
+@keyframes flick{0%,88%,100%{opacity:1}89%{opacity:.35}90%{opacity:1}93%{opacity:.6}94%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.logo h1{animation:none}}
+.tBottom{width:min(440px,100%);display:flex;flex-direction:column;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:54px;padding:0 18px;border-radius:10px;font-weight:900;font-size:18px;letter-spacing:.06em;background:linear-gradient(180deg,var(--key-hi),var(--key));border:1px solid var(--edge);box-shadow:0 4px 0 #000,inset 0 1px 0 rgba(255,255,255,.08);color:var(--paper);transition:transform .06s,box-shadow .06s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
+.btn.go{background:linear-gradient(180deg,#e8574f,#b8241d);border-color:#ff8a80;font-size:20px;min-height:60px;text-shadow:0 1px 0 #5c1612}
+.row{display:flex;gap:10px;width:100%}
+.row>.btn{flex:1;min-width:0}
+
+/* ---- 共通の右上 ---- */
+#corner{position:fixed;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));z-index:40;display:flex;gap:6px}
+#corner button{height:40px;min-width:44px;padding:0 9px;border-radius:9px;border:1px solid rgba(217,242,230,.35);background:rgba(8,11,12,.72);font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;gap:4px}
+
+/* ---- プレイ ---- */
+#vPlay{pointer-events:none}
+#vPlay > *{pointer-events:auto}
+#hud{position:fixed;top:max(8px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));z-index:30;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.clock{font-family:var(--dot);font-size:clamp(22px,6vw,30px);line-height:1;color:var(--fl);text-shadow:0 0 10px rgba(120,255,190,.45);background:rgba(0,0,0,.55);padding:6px 10px 5px;border:1px solid rgba(217,242,230,.25);border-radius:6px}
+.clock small{display:block;font-size:11px;letter-spacing:.1em;color:var(--dim);margin-top:3px}
+.comp{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.55);border:1px solid rgba(217,242,230,.2);border-radius:6px;padding:5px 8px;font-size:11px;font-weight:900;color:var(--dim)}
+.comp i{width:14px;height:14px;border:1.5px solid #6d7a76;border-radius:3px}
+.comp i.on{background:var(--red);border-color:#ffb3ad;box-shadow:0 0 8px var(--red)}
+#mon{position:fixed;z-index:35;top:calc(max(8px,env(safe-area-inset-top)) + 48px);right:max(8px,env(safe-area-inset-right));width:clamp(104px,26vw,170px);aspect-ratio:4/3;border:2px solid #2a3234;border-radius:4px;background:#000;pointer-events:none;box-shadow:0 0 0 1px #000}
+#bubble{position:fixed;z-index:25;max-width:min(78vw,380px);background:#f6f7f2;color:#121617;border-radius:14px;padding:10px 14px;font-weight:900;font-size:clamp(15px,4.2vw,19px);line-height:1.45;box-shadow:0 6px 18px rgba(0,0,0,.6);pointer-events:none;transform:translate(-50%,0);text-align:center;transition:opacity .15s}
+#bubble{--bc:#f6f7f2}
+#bubble::after{content:'';position:absolute;border:9px solid transparent}
+#bubble.up::after{left:50%;top:-9px;margin-left:-9px;border-top:0;border-bottom-color:var(--bc)}
+#bubble.side::after{left:-9px;top:16px;border-left:0;border-right-color:var(--bc)}
+#bubble.rage{--bc:#ffe9e7;background:#ffe9e7;color:#7a0f0a;font-size:clamp(17px,4.8vw,22px);animation:shake .12s linear infinite}
+#bubble.ghost{--bc:rgba(220,232,236,.9);background:rgba(220,232,236,.9);color:#2a3438;font-family:var(--min);font-weight:600}
+@keyframes shake{25%{transform:translate(calc(-50% - 2px),1px)}75%{transform:translate(calc(-50% + 2px),-1px)}}
+#note{position:fixed;z-index:25;transform:translateX(-50%);max-width:min(92vw,520px);padding:8px 14px;border-radius:8px;background:rgba(5,8,8,.82);border:1px solid rgba(217,242,230,.3);color:var(--fl);font-weight:700;font-size:clamp(13px,3.6vw,16px);line-height:1.45;text-align:center;pointer-events:none;width:max-content;text-wrap:balance}
+#note.tut{border-color:var(--yel);color:#fff2c4}
+#note.warn{border-color:var(--red);color:#ffd2ce}
+
+#panel{position:fixed;z-index:30;left:0;right:0;bottom:0;padding:10px max(10px,env(safe-area-inset-right)) max(10px,calc(env(safe-area-inset-bottom) + 6px)) max(10px,env(safe-area-inset-left));background:linear-gradient(180deg,#141a1b,#0b0f10);border-top:1px solid #2f393b;display:flex;flex-direction:column;gap:8px}
+.pos{display:flex;align-items:center;gap:8px;font-family:var(--dot);background:#08201a;border:1px solid #1d4a3c;border-radius:6px;padding:6px 10px;color:#9ff0c8;min-height:36px;font-size:clamp(13px,3.6vw,15px);text-shadow:0 0 6px rgba(80,255,170,.4)}
+.pos .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pos .tag{color:#ffd36b;border:1px solid #6b5a22;padding:1px 5px;font-size:11px;border-radius:3px;white-space:nowrap}
+.anger{display:flex;gap:3px;align-items:center;font-family:var(--sans);font-weight:900;font-size:11px;color:#ff9d96;white-space:nowrap}
+.anger i{width:9px;height:9px;border-radius:50%;background:#2c3436;border:1px solid #4a5759}
+.anger i.on{background:var(--red);border-color:#ff8a80;box-shadow:0 0 6px var(--red)}
+.acts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.key{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:58px;border-radius:9px;font-weight:900;font-size:clamp(14px,3.8vw,17px);background:linear-gradient(180deg,var(--key-hi),var(--key));border:1px solid var(--edge);box-shadow:0 4px 0 #000,inset 0 1px 0 rgba(255,255,255,.07);color:var(--paper);transition:transform .06s,box-shadow .06s,opacity .15s}
+.key:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
+.key:disabled{opacity:.35;pointer-events:none}
+.key.sell{background:linear-gradient(180deg,#36b07a,#1d7a50);border-color:#7fe0b3;text-shadow:0 1px 0 var(--grn-dk)}
+.key.ref{background:linear-gradient(180deg,#d9483f,#9e2019);border-color:#ff8a80;text-shadow:0 1px 0 var(--red-dk)}
+.qs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qs .key{min-height:46px;font-size:clamp(13px,3.5vw,15px);flex-direction:row;padding:0 8px;line-height:1.25}
+.qs .key.backk{grid-column:1/-1;min-height:38px;background:none;border-color:#3b4749;box-shadow:none;color:var(--dim)}
+
+/* 横長: パネルを右へ */
+@media (min-aspect-ratio:1/1){
+  #panel{left:auto;top:0;width:min(330px,36vw);border-top:0;border-left:1px solid #2f393b;justify-content:flex-end;padding-top:max(60px,calc(env(safe-area-inset-top) + 56px))}
+  .acts{grid-template-columns:1fr 1fr}
+  .qs{grid-template-columns:1fr}
+  #mon{right:max(10px,env(safe-area-inset-right));top:calc(max(8px,env(safe-area-inset-top)) + 52px);width:min(calc(min(330px,36vw) - 20px),calc((100svh - 260px) * 1.333))}
+  #corner{right:max(8px,env(safe-area-inset-right))}
+}
+@media (min-aspect-ratio:1/1) and (max-height:430px){
+  .key{min-height:46px}
+  .qs .key{min-height:38px}
+  #panel{gap:6px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+}
+
+/* ---- モーダル（身分証・早見表・遊び方・店長・事件） ---- */
+.modal{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:rgba(2,4,4,.72)}
+.modal .card{max-width:min(94vw,640px);max-height:62svh;width:auto;height:auto;border-radius:12px;box-shadow:0 12px 40px #000}
+.modal .btn{width:min(320px,90vw)}
+.sheet{width:min(440px,94vw);background:#f2f0e6;color:#1a1a1a;border-radius:6px;padding:14px 16px;box-shadow:0 12px 40px #000;transform:rotate(-1deg);font-weight:700;max-height:78svh;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.sheet h3{font-weight:900;font-size:18px;border-bottom:3px solid #c62f27;padding-bottom:4px;color:#c62f27}
+.sheet .big{font-size:clamp(16px,4.4vw,20px);font-weight:900;white-space:pre-line;line-height:1.4}
+.sheet .era{font-family:var(--dot);font-size:14px;white-space:pre-line;line-height:1.5;color:#333}
+.eto{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;font-size:13px;text-align:center}
+.eto div{background:#fff;border:1px solid #ccc;border-radius:4px;padding:3px 0;line-height:1.25}
+.eto b{display:block;font-size:15px}
+.howp{width:min(520px,94vw);background:#101516;border:1px solid #33403f;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:9px;max-height:80svh;overflow:hidden}
+.howp h2{font-family:var(--min);font-weight:800;font-size:26px;text-align:center;color:#fff}
+.howp p{font-size:clamp(13px,3.6vw,15px);line-height:1.6;color:#d6dcd8;padding-left:22px;position:relative}
+.howp p::before{content:attr(data-n);position:absolute;left:0;top:1px;width:16px;height:16px;border-radius:50%;background:var(--red);color:#fff;font-size:11px;font-weight:900;text-align:center;line-height:16px}
+
+#boss{background:linear-gradient(180deg,transparent 40%,rgba(2,4,4,.85));justify-content:flex-end;padding-bottom:max(24px,calc(env(safe-area-inset-bottom) + 18px))}
+.say{width:min(560px,94vw);background:rgba(10,14,15,.92);border:1px solid #3b4749;border-radius:12px;padding:12px 16px 14px;display:flex;flex-direction:column;gap:6px}
+.say b{font-size:12px;color:#7fe0b3;letter-spacing:.1em}
+.say p{font-weight:900;font-size:clamp(17px,4.6vw,21px);line-height:1.5;min-height:1.5em}
+.say .row{margin-top:6px}
+
+#event{background:rgba(0,0,0,.9);text-align:center}
+#event .ev{max-width:min(560px,92vw);font-weight:900;font-size:clamp(16px,4.4vw,21px);line-height:1.6;color:#e7ece9}
+#event .stamp{font-family:var(--min);font-size:min(22vw,16vh,120px);color:var(--red);border:6px solid var(--red);padding:4px 18px;transform:rotate(-8deg) scale(1.6);opacity:0;transition:transform .25s cubic-bezier(.3,1.6,.5,1),opacity .1s;text-shadow:0 0 30px rgba(232,66,58,.5);white-space:nowrap}
+#event .stamp.in{transform:rotate(-8deg) scale(1);opacity:1}
+
+/* ---- 結果 ---- */
+#vEnd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,calc(env(safe-area-inset-bottom) + 8px));background:rgba(3,5,5,.86)}
+#slip{flex:1;min-height:0;max-width:100%;width:auto;height:auto;max-height:calc(100svh - 150px);aspect-ratio:1080/1350;border-radius:6px;box-shadow:0 10px 40px #000}
+.endBtns{width:min(460px,100%);display:flex;flex-direction:column;gap:8px}
+@media (min-aspect-ratio:1/1){
+  #vEnd{flex-direction:row}
+  #slip{max-height:calc(100svh - 28px);flex:none}
+  .endBtns{width:min(300px,40vw)}
+}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="grain"></div>
+
+<div id="corner">
+  <button id="bSheet" hidden aria-label="早見表"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span id="tSheet">早見表</span></button>
+  <button id="bLang" aria-label="language">EN</button>
+  <button id="bMute" aria-label="音"><svg class="i" viewBox="0 0 24 24" id="icoSnd"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></button>
+</div>
+
+<main id="vTitle" class="view">
+  <div class="logo">
+    <div class="tag">NIGHT SHIFT 00:00 - 05:00</div>
+    <h1 id="tTitle">年齢<span>確認</span></h1>
+    <p id="tSub">深夜0時、コンビニのレジ</p>
+  </div>
+  <div class="tBottom">
+    <button class="btn go" id="bStart">シフトに入る</button>
+    <button class="btn" id="bHow">遊び方</button>
+  </div>
+</main>
+
+<main id="vPlay" class="view" hidden>
+  <div id="hud">
+    <div class="clock"><span id="clk">00:00</span><small id="date">11月1日(日)</small></div>
+    <div class="comp"><span id="tComp">クレーム</span><i></i><i></i><i></i></div>
+  </div>
+  <canvas id="mon" width="320" height="240"></canvas>
+  <div id="bubble" hidden></div>
+  <div id="note" hidden></div>
+  <div id="panel">
+    <div class="pos"><span class="nm" id="posNm">---</span><span class="tag" id="posTag">年齢確認商品</span><span class="anger" id="anger"></span></div>
+    <div class="acts" id="acts">
+      <button class="key" id="aAsk"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M10 9.5a2 2 0 1 1 2.8 1.8c-.5.3-.8.7-.8 1.2"/><path d="M12 14.5v.01"/></svg><span>質問</span></button>
+      <button class="key" id="aId"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2.2"/><path d="M5.5 16c.6-1.6 1.7-2.4 3-2.4s2.4.8 3 2.4M14 10h4M14 13h3"/></svg><span>身分証</span></button>
+      <button class="key ref" id="aRef"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/></svg><span>断る</span></button>
+      <button class="key sell" id="aSell"><svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>売る</span></button>
+    </div>
+    <div class="qs" id="qs" hidden>
+      <button class="key" data-q="year"></button>
+      <button class="key" data-q="eto"></button>
+      <button class="key" data-q="student"></button>
+      <button class="key" data-q="why"></button>
+      <button class="key backk" id="qBack">もどる</button>
+    </div>
+  </div>
+</main>
+
+<main id="vEnd" class="view" hidden>
+  <canvas id="slip" width="1080" height="1350"></canvas>
+  <div class="endBtns">
+    <button class="btn" id="bSave"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>画像を保存</span></button>
+    <button class="btn" id="bPost"><svg class="i" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20"/></svg><span>Xでポスト</span></button>
+    <div class="row"><button class="btn go" id="bAgain">もう一回</button><button class="btn" id="bTitle">タイトル</button></div>
+  </div>
+</main>
+
+<div class="modal" id="mId" hidden><canvas class="card" id="idc" width="1000" height="630"></canvas><button class="btn" id="bIdClose">閉じる</button></div>
+<div class="modal" id="mSheet" hidden><div class="sheet" id="sheet"></div><button class="btn" id="bSheetClose">閉じる</button></div>
+<div class="modal" id="mHow" hidden><div class="howp" id="howp"></div><button class="btn" id="bHowClose">閉じる</button></div>
+<div class="modal" id="boss" hidden><div class="say"><b id="bossNm">店長</b><p id="bossLine"></p><div class="row"><button class="btn" id="bBossSkip">とばす</button><button class="btn go" id="bBossNext">つぎへ</button></div></div></div>
+<div class="modal" id="event" hidden><div class="ev" id="evText"></div><div class="stamp" id="evStamp"></div><button class="btn go" id="bEvNext" hidden>給料明細へ</button></div>
+
+<script>
+(function(){
+  var opt={passive:false};
+  ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault()},opt)});
+  document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)e.preventDefault()},opt);
+  var last=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<300&&!(e.target.closest&&e.target.closest('button,a')))e.preventDefault();last=n},opt);
+  document.addEventListener('dblclick',function(e){e.preventDefault()},opt);
+  window.addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},opt);
+  window.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&['+','-','=','0',';'].indexOf(e.key)>=0)e.preventDefault()});
+})();
+(function(){
+  var errs=[];
+  window.addEventListener('error',function(e){errs.push((e.message||'error')+' @'+(e.filename||'')+':'+(e.lineno||''))});
+  window.addEventListener('unhandledrejection',function(e){errs.push('reject: '+(e.reason&&e.reason.message||e.reason))});
+  setTimeout(function(){
+    if(window.__acReady) return;
+    var d=document.createElement('div');d.style.cssText='position:fixed;inset:auto 8px 8px 8px;z-index:99;background:#fff;color:#b00;font:12px/1.4 monospace;white-space:pre-wrap;padding:10px;border-radius:8px';
+    d.textContent='起動できませんでした / failed to start\n'+(errs.join('\n')||'(no error captured)')+'\n'+navigator.userAgent;
+    document.body.appendChild(d);
+  },8000);
+})();
+</script>
+<script src="data.js?v=1"></script>
+<script type="module" src="game.js?v=1"></script>
+</body>
+</html>
