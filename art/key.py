@@ -17,7 +17,7 @@ def key(src, mag=False, size=(896,1344)):
     im=Image.fromarray(out,'RGBA')
     A=im.split()[3].filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(0.8)); im.putalpha(A)
     return im.resize(size, Image.LANCZOS)
-for f in sorted(glob.glob(D+'/raw/[cy]_*.png')):
+for f in sorted(glob.glob(D+'/raw/[cyn]_*.png')):
     n=os.path.basename(f)[:-4]; im=key(f, mag=n in('y_kappa','y_kappakid'))
     im.save(OUT+n+'.webp', quality=84, method=6); print(n, os.path.getsize(OUT+n+'.webp')//1024,'KB')
 it=key(D+'/raw/items.png', size=(1536,1024))

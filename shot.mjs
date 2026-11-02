@@ -13,7 +13,7 @@ for (const [w, h, n] of [[390, 844, 'phone'], [1440, 900, 'pc'], [844, 390, 'lan
   await p.waitForTimeout(600); await p.screenshot({ path: `shots/s-${n}-title.png` })
   await p.evaluate(() => { ac.dbg.pause(true); ac.start(7); ac.dbg.step(60) })
   await p.waitForTimeout(300); await p.screenshot({ path: `shots/s-${n}-boss.png` })
-  await p.evaluate(() => { document.querySelector('#bBossSkip').click(); ac.dbg.step(200) })
+  await p.evaluate(() => { document.querySelector('#bBossSkip').click(); for (let i = 0; i < 200 && ac.state().phase !== 'turn'; i++) ac.dbg.step(10) })
   const hs = await p.evaluate(() => ac.hs(ac.state().k))
   await p.evaluate(h => { ac.inspect(h.sx, h.sy); ac.dbg.step(10) }, hs[0])
   await p.waitForTimeout(300); await p.screenshot({ path: `shots/s-${n}-cust.png` })

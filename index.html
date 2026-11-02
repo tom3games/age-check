@@ -9,12 +9,12 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="年齢確認 ― 深夜コンビニ推理ゲーム">
 <meta property="og:description" content="深夜2時、レジに来た客は本当に20歳以上？肌・服・持ち物を見て、質問して見抜く。未成年に売ったら営業停止。妖怪も来る。">
-<meta property="og:image" content="https://tom3games.github.io/age-check/og.png?v=1">
+<meta property="og:image" content="https://tom3games.github.io/age-check/og.png?v=2">
 <meta property="og:url" content="https://tom3games.github.io/age-check/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="年齢確認 ― 深夜コンビニ推理ゲーム">
 <meta name="twitter:description" content="レジに来た客は本当に20歳以上？未成年に売ったら営業停止。妖怪も来る。">
-<meta name="twitter:image" content="https://tom3games.github.io/age-check/og.png?v=1">
+<meta name="twitter:image" content="https://tom3games.github.io/age-check/og.png?v=2">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2307090a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' font-weight='900' fill='%23e8423a' font-family='sans-serif'%3E20%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -153,6 +153,29 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
   #slip{max-height:calc(100svh - 28px);flex:none}
   .endBtns{width:min(300px,40vw)}
 }
+
+.sales{background:rgba(0,0,0,.55);border:1px solid rgba(217,242,230,.2);border-radius:6px;padding:5px 8px 6px;font-size:11px;font-weight:900;color:var(--dim);min-width:150px}
+.sales b{display:block;font-family:var(--dot);font-weight:400;font-size:13px;color:#ffe08a;margin-top:1px}
+.sales .bar{height:5px;background:#1d2628;border-radius:3px;margin-top:4px;overflow:hidden}
+#salesBar{height:100%;width:0;background:linear-gradient(90deg,#d9a83a,#ffd36b);transition:width .4s}
+#salesBar.done{background:linear-gradient(90deg,#2f9e6a,#7fe0b3)}
+.qs .key.wide{grid-column:1/-1}
+.sheet .sub{font-size:13px;color:#444}
+.trend{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:11px;text-align:center}
+.trend div{background:#fff7e0;border:1px solid #e0cf9a;border-radius:4px;padding:3px 2px;line-height:1.25}
+.trend b{display:block;font-size:12px}
+.evb{width:min(420px,92vw)}
+.ckp{width:min(640px,94vw);background:#101516;border:1px solid #33403f;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;max-height:82svh;min-height:0}
+.ckp h3{font-family:var(--min);font-weight:800;font-size:22px;text-align:center}
+.ckg{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:5px;min-height:0;overflow:auto}
+.ck{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:4px 2px 3px;border-radius:8px;background:#1a2224;border:2px solid #2c3638;color:#e8eee9}
+.ck.ok{border-color:#2f9e6a}.ck.ng{border-color:#e8423a}.ck.sel{background:#2a3436}
+.ck i{width:40px;height:40px;border-radius:50%;background-color:#0a0f10;background-repeat:no-repeat}
+.ck b{font-size:12px;line-height:1.2}.ck span{font-size:9px;color:var(--dim);white-space:nowrap;line-height:1.2}
+.ck em{position:absolute;top:2px;right:5px;font-style:normal;font-weight:900;font-size:15px}
+.ck.ok em{color:#7fe0b3}.ck.ng em{color:#ff8a80}
+#ckWhy{min-height:2.9em;font-weight:700;font-size:clamp(13px,3.6vw,15px);line-height:1.45;color:#ffe9b0;text-align:center}
+@media (max-height:700px){.ck b{font-size:12px}}
 </style>
 </head>
 <body>
@@ -181,6 +204,7 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
   <div id="hud">
     <div class="clock"><span id="clk">00:00</span><small id="date">11月1日(日)</small></div>
     <div class="comp"><span id="tComp">クレーム</span><i></i><i></i><i></i></div>
+    <div class="sales"><span id="tSales">売上</span><b id="salesNum">¥0 / ¥0</b><div class="bar"><div id="salesBar"></div></div></div>
   </div>
   <canvas id="mon" width="320" height="240"></canvas>
   <div id="bubble" hidden></div>
@@ -194,10 +218,11 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
       <button class="key sell" id="aSell"><svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>売る</span></button>
     </div>
     <div class="qs" id="qs" hidden>
-      <button class="key" data-q="year"></button>
+      <button class="key" data-q="birth"></button>
       <button class="key" data-q="eto"></button>
-      <button class="key" data-q="student"></button>
-      <button class="key" data-q="why"></button>
+      <button class="key" data-q="name"></button>
+      <button class="key" data-q="job"></button>
+      <button class="key wide" data-q="trend"></button>
       <button class="key backk" id="qBack">もどる</button>
     </div>
   </div>
@@ -206,6 +231,7 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 <main id="vEnd" class="view" hidden>
   <canvas id="slip" width="1080" height="1350"></canvas>
   <div class="endBtns">
+    <button class="btn" id="bCheck"><svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>答え合わせ</span></button>
     <button class="btn" id="bSave"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>画像を保存</span></button>
     <button class="btn" id="bPost"><svg class="i" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20"/></svg><span>Xでポスト</span></button>
     <div class="row"><button class="btn go" id="bAgain">もう一回</button><button class="btn" id="bTitle">タイトル</button></div>
@@ -216,7 +242,8 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 <div class="modal" id="mSheet" hidden><div class="sheet" id="sheet"></div><button class="btn" id="bSheetClose">閉じる</button></div>
 <div class="modal" id="mHow" hidden><div class="howp" id="howp"></div><button class="btn" id="bHowClose">閉じる</button></div>
 <div class="modal" id="boss" hidden><div class="say"><b id="bossNm">店長</b><p id="bossLine"></p><div class="row"><button class="btn" id="bBossSkip">とばす</button><button class="btn go" id="bBossNext">つぎへ</button></div></div></div>
-<div class="modal" id="event" hidden><div class="ev" id="evText"></div><div class="stamp" id="evStamp"></div><button class="btn go" id="bEvNext" hidden>給料明細へ</button></div>
+<div class="modal" id="mCheck" style="z-index:70" hidden><div class="ckp"><h3 id="ckTitle"></h3><div class="ckg" id="ckGrid"></div><p id="ckWhy"></p></div><button class="btn" id="bCkClose">閉じる</button></div>
+<div class="modal" id="event" hidden><div class="ev" id="evText"></div><div class="stamp" id="evStamp"></div><div class="row evb"><button class="btn" id="bEvCheck" hidden>答え合わせ</button><button class="btn go" id="bEvNext" hidden>給料明細へ</button></div></div>
 
 <script>
 (function(){
@@ -240,7 +267,7 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
   },8000);
 })();
 </script>
-<script src="data.js?v=1"></script>
-<script type="module" src="game.js?v=1"></script>
+<script src="data.js?v=2"></script>
+<script type="module" src="game.js?v=2"></script>
 </body>
 </html>
