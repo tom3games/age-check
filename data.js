@@ -1,6 +1,7 @@
 // 年齢確認 v2 — 文言と客のデータ（日英）。客の手がかり(hs)の座標は元絵 1024x1536 の座標
 // 夜は 2026年11月1日(日) 0:00〜5:00（ハロウィン明け）。2006年11月1日以前の生まれなら20歳以上
 // v2: 売上ノルマ・行列・偽物/借り物の身分証・客ごとの身分証の出方が毎回変わる（ids の中から1つ）
+// v4: 客を4人追加（早すぎるサンタ・未来人・修学旅行生・化け狸）
 window.AC = (() => {
   const T = (ja, en) => ({ ja, en })
   const UI = {
@@ -277,6 +278,53 @@ window.AC = (() => {
       idLine: T('パスポート、OK？', 'Passport, OK?'),
       sell: T('アリガト！', 'Arigato!'), refuse: T('Why!?', 'Why?!'), rage: T('No way!', 'No way!'),
       hs: [[509, 503, 130, T('日焼けした顔。目じりに笑いじわ', 'Sunburned face, laugh lines')], [319, 893, 120, T('えんじ色のパスポート', 'A burgundy passport')], [804, 866, 90, T('大きな登山リュック', 'A big hiking backpack')], [509, 572, 70, T('しっかりしたひげ', 'A full beard')]] },
+
+    // v4 追加（2026-11-06）。全員架空の人物。絵は art/prompts
+    { k: 'n_santa', claim: [1968, '申'], minor: false, age: 57, item: 'beer', n: 2, pat: 5, idCost: 1,
+      hello: T('メリークリスマス。ビール2本', 'Merry Christmas. Two beers.'),
+      a: { birth: T('昭和43年12月24日です', 'Showa 43, Dec 24.'), eto: T('申です', 'Monkey.'), name: T('三田です。さんた、と読みます', 'Santa. Really. Mr. Santa.'), trend: T('たまごっちは娘のですね', 'Tamagotchi? That was my daughter.'), job: T('ケーキ屋です。予約の研修で', 'Cake shop. Pre-order training.') },
+      ids: [
+        { none: true, why: T('付けひげの下に本物の白い無精ひげ・深いしわ・老眼鏡。11月に働くケーキ屋のおじさん', 'Real grey stubble under the fake beard, deep wrinkles, reading glasses. A cake-shop uncle, working in November') },
+        { kind: 'license', name: T('三田 泰三', 'Taizo Santa'), y: 1968, m: 12, d: 24, why: T('本当に三田さん。免許の写真・名前・干支が全部合う', 'He really is Mr. Santa. Photo, name and zodiac all match') },
+      ],
+      noId: T('サンタに免許はいりません。…冗談です、車の中です', 'Santa needs no license. ...Kidding. It\'s in the car.'), idLine: T('はい、三田です', 'Here. Santa.'),
+      sell: T('良いお年を。まだ早いか', 'Happy New Year. Too early?'), refuse: T('57歳のサンタですよ…', 'I\'m a 57-year-old Santa...'), rage: T('来月のプレゼントは抜きです！', 'No presents for you next month!'),
+      hs: [[500, 440, 130, T('深いしわとシミ。目じりが下がっている', 'Deep wrinkles and age spots. Drooping eyes')], [528, 620, 90, T('付けひげの上に、本物の白い無精ひげ', 'Real grey stubble above the fake beard')], [520, 780, 110, T('綿の付けひげ。ゴムひもで耳に掛けている', 'A cotton beard on elastic loops')], [510, 910, 90, T('老眼鏡をひもで下げている', 'Reading glasses on a cord')], [660, 1130, 100, T('白紙のチラシの束。これから印刷？', 'A stack of blank flyers')], [540, 340, 100, T('安いサンタの帽子。まだ11月だ', 'A cheap Santa hat. It is November')]] },
+
+    { k: 'n_future', claim: [2087, '未'], minor: false, age: 43, item: 'strong', n: 2, pat: 5, idCost: 1,
+      hello: T('2087年から来た。ストロング缶を2本', 'I came from 2087. Two strong chu-hi.'),
+      a: { birth: T('2087年だ。まだ生まれていない', '2087. I have not been born yet.'), eto: T('未だ。調べてきた', 'Goat. I looked it up.'), name: T('コードネームは、木村', 'Codename: Kimura.'), trend: T('たまごっちだ。…未来でも流行っている', 'Tamagotchi. ...Big in the future too.'), job: T('時空管理局。平日は経理だ', 'Time Bureau. Accounting on weekdays.') },
+      ids: [
+        { none: true, why: T('自称未来人。でも白髪・しわ・古い腕時計・流行りがたまごっち。どう見ても40代の会社員', 'Claims to be from the future. Grey hair, wrinkles, old watch, Tamagotchi kid. Clearly a 40-something office worker') },
+        { kind: 'crayon', title: 'ぎんがめんきょしょう', name: T('きむら', 'KIMURA'), y: 2087, m: 8, d: 17, fake: true, idLine: T('銀河共通の免許だ', 'A pan-galactic license.'), why: T('手作りの銀河免許は無効。でも本人は40代の大人。偽物だから断る、では怒られる', 'The homemade license is void, but he is plainly in his 40s. Refusing just because it\'s fake earns a complaint') },
+        { kind: 'license', name: T('木村 修一', 'Shuichi Kimura'), y: 1983, m: 8, d: 17, claim: [1983, '亥'], idLine: T('…これは仮の姿の免許だ', '...This license is for my temporary form.'), a: { birth: T('仮の姿では昭和58年だ', 'In this form, Showa 58.'), eto: T('仮の姿は亥だ', 'In this form, Boar.') }, why: T('本物の免許は昭和58年生まれ＝43歳。名前も干支も合う', 'His real license says 1983 = 43. Name and zodiac match') },
+      ],
+      noId: T('免許は未来に置いてきた', 'I left my license in the future.'), idLine: T('これを見ろ', 'Behold.'),
+      sell: T('歴史が変わらないといいが', 'I hope this does not alter history.'), refuse: T('この歴史は間違っている…', 'This timeline is wrong...'), rage: T('タイムパトロールを呼ぶぞ！', 'I\'m calling the Time Patrol!'),
+      hs: [[516, 560, 130, T('深いしわと、濃いくま。ひげの剃り跡', 'Deep lines, dark bags, five-o\'clock shadow')], [370, 470, 70, T('こめかみに白髪', 'Grey at the temples')], [516, 320, 110, T('アルミホイルのヘルメット。手作り', 'A homemade foil helmet')], [516, 140, 100, T('針金のアンテナ。受信はしていない', 'Wire antennas. Receiving nothing')], [516, 1120, 130, T('ホイルの箱に、ペットボトルのふた', 'A foil box with bottle-cap buttons')], [836, 1210, 70, T('古いデジタルの腕時計。未来の割に', 'An old digital watch. For a future man...')], [776, 800, 110, T('防災用の銀色シート', 'A silver emergency blanket')]] },
+
+    { k: 'n_trip', claim: [1985, '申'], minor: true, age: 16, item: 'beer', n: 2, pat: 5, idCost: 0,
+      hello: T('ビールを、2本。…大人なので', 'Two beers. ...As an adult.'),
+      a: { birth: T('昭和60年…です', 'Showa 60...'), eto: T('…さる？', '...Monkey?'), name: T('た、田中です', 'T-Tanaka.'), trend: T('妖怪ウォッチ！…あ、いえ', 'Yo-kai Watch! ...I mean, no.'), job: T('サラリーマンです。出張で', 'Businessman. On a trip.') },
+      ids: [
+        { none: true, why: T('マジックで描いたひげ・学ラン・みやげの木刀。昭和60年は丑年なのに申と答えた', 'A marker mustache, school uniform, souvenir sword. Showa 60 is Ox, not Monkey') },
+        { kind: 'techo', name: T('田中 陽太', 'Yota Tanaka'), y: 2010, m: 9, d: 2, idLine: T('…あ、しおりと間違えた', '...Oh. Wrong booklet.'), why: T('間違えて生徒手帳を出した。2010年生まれ＝16歳', 'He handed over his school handbook by mistake: born 2010 = 16') },
+        { kind: 'license', name: T('田中 茂', 'Shigeru Tanaka'), y: 1968, m: 5, d: 2, photo: 'n_santa', fake: true, coached: true, claim: [1968, '申'], idLine: T('せ、先生の…いや、ぼくのです', 'M-my teacher\'s... I mean, mine.'), a: { birth: T('しょ、昭和43年…です', 'Sh-Showa 43...'), name: T('田中…しげる、です', 'Tanaka... Shigeru.') }, why: T('免許の写真は白髪のおじさん（担任）。干支は合うが本人ではない', 'The photo is a grey-haired man (his teacher). The zodiac fits, the face does not') },
+      ],
+      noId: T('ホテルに置いてきました', 'I left it at the hotel.'), idLine: T('…はい', '...Here.'),
+      sell: T('やった！…いえ、どうも', 'Yes! ...I mean, thank you.'), refuse: T('班のみんなに言えない…', 'I can\'t tell my group...'), rage: T('もう自由行動終わるから！', 'Free time is almost over anyway!'),
+      detect: T('旅館の部屋で空き缶が見つかった。担任の先生がレシートを持って来た', 'Empty cans turned up at the inn. A teacher brought in our receipt.'),
+      hs: [[532, 530, 80, T('ひげはマジックで描いてある', 'The mustache is drawn on in marker')], [512, 420, 110, T('つるつるの若い肌。眉間にしわを寄せている', 'Smooth young skin. Forcing a frown')], [312, 840, 120, T('みやげ物の木刀。なぜ買ったのか', 'A souvenir wooden sword. Why?')], [532, 900, 100, T('上までボタンを留めた学ラン', 'A school uniform buttoned to the top')], [732, 1040, 100, T('みやげの紙袋', 'A souvenir bag')], [812, 1200, 90, T('修学旅行のしおり', 'A school-trip booklet')]] },
+
+    { k: 'y_tanuki', claim: [1883, '未'], minor: false, age: 143, item: 'cup', n: 2, pat: 5, idCost: 0,
+      hello: T('人間です。ワンカップ、2つだポン', 'I am a human. Two cup sakes, pon.'),
+      a: { birth: T('明治16年だポン', 'Meiji 16, pon.'), eto: T('未だポン', 'Goat, pon.'), name: T('狸山ポン吉…いや、山田です', 'Ponkichi... I mean, Yamada.'), trend: T('文明開化だポン', 'Westernization, pon.'), job: T('化けて営業だポン', 'Sales, in disguise, pon.') },
+      ids: [
+        { kind: 'leaf', name: T('狸山 ポン吉', 'Ponkichi Tanukiyama'), y: 1883, m: 4, d: 1, leaf: ['狸山', 'ポン吉', '明治十六年', '未年生', 'Ponkichi / born Meiji 16 (1883), Goat'], idLine: T('名刺と免許を兼ねてるポン', 'It\'s also my business card, pon.'), why: T('本物の化け狸。葉っぱの免許は明治16年生まれ＝143歳', 'A real shape-shifter. The leaf says 1883 = 143') },
+        { kind: 'leaf', name: T('狸山 ポン太', 'Ponta Tanukiyama'), y: 2023, m: 4, d: 1, leaf: ['狸山', 'ポン太', '令和五年', '卯年生', 'Ponta / born Reiwa 5 (2023), Rabbit'], minor: true, age: 3, coached: true, claim: [2023, '卯'], detect: T('酔った子だぬきが山で見つかった。親だぬきが葉っぱを握りしめて抗議に来た', 'A tipsy tanuki cub was found on the mountain. Its parent came to complain, clutching a leaf.'), idLine: T('化けて3年だポン。立派な大人だポン', 'Three years of shape-shifting, pon. Very grown-up, pon.'), a: { birth: T('令和5年だポン', 'Reiwa 5, pon.'), eto: T('卯だポン', 'Rabbit, pon.'), name: T('ポン太だポン', 'Ponta, pon.'), trend: T('どんぐりだポン', 'Acorns, pon.'), job: T('化ける修行中だポン', 'Learning to shift, pon.') }, why: T('この夜は令和5年生まれの子だぬき＝3歳。妖怪でも20歳未満はだめ', 'Tonight, a cub born 2023 = 3. Under 20 is under 20, yokai or not') },
+      ],
+      sell: T('おつりは葉っぱでいいポン', 'Keep the change in leaves, pon.'), refuse: T('人間なのに！だポン！', 'But I\'m a human! Pon!'), rage: T('お店を葉っぱにするポン！', 'I\'ll turn this store into leaves, pon!'),
+      hs: [[468, 400, 130, T('毛むくじゃらの顔。隠す気がない', 'A furry face. Not even trying')], [468, 120, 90, T('頭の上に葉っぱ。化けた跡', 'A leaf on the head. Mid-transformation')], [488, 890, 110, T('葉っぱに筆で何か書いてある', 'Brush marks on a leaf')], [288, 940, 90, T('毛の生えた手。肉球つき', 'Furry paws')], [888, 1200, 130, T('しっぽが出ている', 'The tail is showing')], [488, 1215, 90, T('お腹でボタンが飛びそう', 'Buttons straining over the belly')]] },
 
     { k: 'y_zashiki', claim: [1624, '子'], yokai: true, minor: false, age: 402, item: 'cup', n: 1, pat: 5, idCost: 0,
       hello: T('……おさけ、ちょうだい', '...sake, please.'),

@@ -45,10 +45,10 @@ const fit = q => q.evaluate(() => {
   if (!b.hidden && !n.hidden) { const r1 = b.getBoundingClientRect(), r2 = n.getBoundingClientRect(); if (!(r1.bottom <= r2.top || r2.bottom <= r1.top || r1.right <= r2.left || r2.right <= r1.left)) over.push('bubble×note') }
   return { H, over: over.slice(0, 6) }
 })
-const SIZES = [[360, 640, 'small'], [390, 844, 'phone'], [844, 390, 'land'], [667, 375, 'land-se'], [768, 1024, 'tab'], [1440, 900, 'pc']]
+const SIZES = [[360, 640, 'small'], [390, 844, 'phone'], [430, 932, 'big'], [844, 390, 'land'], [667, 375, 'land-se'], [768, 1024, 'tab'], [1440, 900, 'pc']]
 
 // 客が言う「生まれ年」と「干支」（耳で聞こえる情報）。干支の字がちがう＝嘘
-const CLAIM = { c_a: [1954, '午'], c_b: [1998, '寅'], c_c: [2001, '辰'], c_d: [2002, '午'], c_e: [2006, '戌'], c_f: [2004, '申'], c_g: [1960, '辰'], c_h: [2004, '申'], c_i: [1926, '寅'], c_j: [2004, '子'], c_k: [1981, '酉'], c_l: [2005, '丑'], y_kappa: [1798, '午'], y_kappakid: [2000, '?'], y_rokuro: [1716, '申'], n_oldboy: [1990, '卯'], n_babyface: [1985, '丑'], n_eighteen: [2008, '子'], y_zashiki: [1624, '子'] }
+const CLAIM = { c_a: [1954, '午'], c_b: [1998, '寅'], c_c: [2001, '辰'], c_d: [2002, '午'], c_e: [2006, '戌'], c_f: [2004, '申'], c_g: [1960, '辰'], c_h: [2004, '申'], c_i: [1926, '寅'], c_j: [2004, '子'], c_k: [1981, '酉'], c_l: [2005, '丑'], y_kappa: [1798, '午'], y_kappakid: [2000, '?'], y_rokuro: [1716, '申'], n_oldboy: [1990, '卯'], n_babyface: [1985, '丑'], n_eighteen: [2008, '子'], y_zashiki: [1624, '子'], n_santa: [1968, '申'], n_future: [2087, '未'], n_trip: [1985, '申'], y_tanuki: [1883, '未'] }
 const ETO = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'], etoOf = y => ETO[((y - 4) % 12 + 12) % 12]
 
 const browser = await chromium.launch(MUTE_LAUNCH)
@@ -128,7 +128,7 @@ await t('文字は同時に2つまで（吹き出し＋メモ）', async () => {
   const r = await p.evaluate(() => [...document.querySelectorAll('#bubble,#note,#boss,#event')].filter(e => !e.hidden).length)
   expect(r <= 2, r); return r
 })
-await t('全20人の手がかりを全部タップでき、場所ごとに違う一言が出る', async () => {
+await t('全員の手がかりを全部タップでき、場所ごとに違う一言が出る', async () => {
   const r = await p.evaluate(() => {
     const out = []
     for (const c of ac.D.C) {
@@ -179,7 +179,8 @@ for (const pol of ['smart', 'sell', 'refuse', 'idAll', 'idCheck', 'etoOnly', 'id
 await t('推理する人: 朝5時まで・ノルマ達成・クレーム0・全員正解で本採用', async () => { const r = runs.smart; expect(r.ended === 'dawn' && r.sales >= r.quota && r.complaints === 0 && !r.rages.length && r.right === r.total && r.stamp === '本採用', JSON.stringify(r)); return r })
 await t('全部売る人: 未成年に売ってバレて営業停止', async () => { const r = runs.sell; expect(r.ended === 'stop', JSON.stringify(r)); return r })
 await t('全部断る人: クレーム3回でクビ（もう無傷のクリアにならない）', async () => { const r = runs.refuse; expect(r.ended === 'fired', JSON.stringify(r)); return r })
-await t('全員に身分証を出させて日付だけ見る人: 借り物・偽物の身分証で営業停止', async () => { const r = runs.idAll; expect(r.ended === 'stop', JSON.stringify(r)); return r })
+// 客が増えて、偽物に当たる前に身分証の無い大人でクビになる夜もある。どの夜も勝てず、偽物で営業停止になる夜があることを見る
+await t('全員に身分証を出させて日付だけ見る人: どの夜も本採用にならず、借り物・偽物で営業停止になる夜がある', async () => { const rs = [runs.idAll]; for (const s of [1, 2, 3, 4, 5]) rs.push(await bot('idAll', s)); const e = rs.map(r => r.ended + '/' + r.stamp.replace('\n', '')); expect(rs.every(r => r.stamp.replace('\n', '') !== '本採用') && rs.some(r => r.ended === 'stop'), JSON.stringify(e)); return e })
 await t('身分証と質問で偽物は見抜くが、見た目を見ない人: 身分証の無い大人を断ってクビ', async () => { const r = runs.idCheck; expect(r.ended === 'fired' || r.ended === 'quota', JSON.stringify(r)); return r })
 await t('生まれ年と干支だけで決める人: 本採用にはならない', async () => { const r = runs.etoOnly; expect(r.stamp !== '本採用', JSON.stringify(r)); return r })
 await t('何もしない人: 待たせて怒らせ・行列が帰り、最低の判定', async () => { const r = runs.idle; expect(['fired', 'quota'].includes(r.ended) && r.sales === 0, JSON.stringify(r)); return r })

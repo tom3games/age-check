@@ -1,0 +1,31 @@
+- snd/chime1.mp3: Bell dings/chimes / PWL / CC0
+- snd/chime2.mp3: Bell dings/chimes / PWL / CC0
+- snd/phone.mp3: Bell dings/chimes / PWL / CC0
+- snd/put.mp3: 50 RPG sound effects / Kenney / CC0
+- snd/beep.mp3: Interface Sounds / Kenney / CC0
+- snd/tap.mp3: Interface Sounds / Kenney / CC0
+- snd/ask.mp3: Interface Sounds / Kenney / CC0
+- snd/look.mp3: Interface Sounds / Kenney / CC0
+- snd/card1.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/card2.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/slam.mp3: 75 CC0 breaking / falling / hit sfx / rubberduck / CC0
+- snd/thwack.mp3: Thwack Sounds / AntumDeluge / CC0
+- snd/grunt_01〜.mp3（切り出し）: Little Grunts / crueltyinc / CC0
+- snd/refuse.mp3: Interface Sounds / Kenney / CC0
+- snd/coins.mp3: 50 RPG sound effects / Kenney / CC0
+- snd/coin.mp3: Coin Drop / Vinrax / CC0
+- snd/complaint.mp3: Interface Sounds / Kenney / CC0
+- snd/siren.mp3（切り出し）: Sirens and Alarm Noise / aquinn / CC0
+- snd/whisper.mp3, snd/flick.mp3（切り出し）: Static / xhunterko / CC0
+- snd/splash.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/creak.mp3（切り出し）: 100 CC0 SFX / rubberduck / CC0
+- snd/dooropen.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/doorclose.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/fumble1.mp3: 50 RPG sound effects / Kenney / CC0
+- snd/fumble2.mp3: 50 RPG sound effects / Kenney / CC0
+- snd/ok.mp3: Interface Sounds / Kenney / CC0
+- snd/ng.mp3: Interface Sounds / Kenney / CC0
+- snd/stamp1.mp3: Thwack Sounds / AntumDeluge / CC0
+- snd/crow.mp3: Crow / fvcalderan / CC0
+- snd/hum.mp3: 100 CC0 SFX #2 / rubberduck / CC0
+- snd/street.mp3: 上の41〜65秒（静かな通り・車が1台通る）を1.5秒の重ね合わせで継ぎ目なしのループにしたもの（22.5秒・16kHz・WAV） / cori / Public domain

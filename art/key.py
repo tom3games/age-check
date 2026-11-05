@@ -1,5 +1,5 @@
 # 緑/マゼンタ背景を抜いて webp(透過) にする。python key.py
-import numpy as np, glob, os
+import numpy as np, glob, os, sys
 from PIL import Image, ImageFilter
 D=os.path.dirname(os.path.abspath(__file__)); OUT=D+'/../img/'
 def key(src, mag=False, size=(896,1344)):
@@ -17,9 +17,13 @@ def key(src, mag=False, size=(896,1344)):
     im=Image.fromarray(out,'RGBA')
     A=im.split()[3].filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(0.8)); im.putalpha(A)
     return im.resize(size, Image.LANCZOS)
+ONLY=sys.argv[1:]   # python key.py n_santa ... で指定した絵だけ
 for f in sorted(glob.glob(D+'/raw/[cyn]_*.png')):
-    n=os.path.basename(f)[:-4]; im=key(f, mag=n in('y_kappa','y_kappakid'))
+    n=os.path.basename(f)[:-4]
+    if ONLY and n not in ONLY: continue
+    im=key(f, mag=n in('y_kappa','y_kappakid','y_tanuki'))
     im.save(OUT+n+'.webp', quality=84, method=6); print(n, os.path.getsize(OUT+n+'.webp')//1024,'KB')
+if ONLY: sys.exit()
 it=key(D+'/raw/items.png', size=(1536,1024))
 names=['beer','strong','cup','tabako','sake','highball']
 for i,n in enumerate(names):

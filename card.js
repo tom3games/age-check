@@ -71,7 +71,7 @@ export function drawCard(cv, v, o) {
     x.fillStyle = '#fffdf2'; x.fillRect(20, 20, W - 40, H - 40)
     x.strokeStyle = '#e74c3c'; x.lineWidth = 8; x.setLineDash([18, 10]); x.strokeRect(34, 34, W - 68, H - 68); x.setLineDash([])
     const wob = (s, X, Y, size, col) => { x.fillStyle = col; let xx = X; for (const [i, ch] of [...s].entries()) { x.save(); x.translate(xx, Y + Math.sin(i * 1.7) * 6); x.rotate(Math.sin(i * 2.3) * 0.12); x.font = `900 ${size}px ${F}`; x.fillText(ch, 0, 0); xx += x.measureText(ch).width + 2; x.restore() } }
-    wob(v.y === 2000 ? 'かっぱめんきょ' : 'おとなめんきょしょう', 70, 120, 58, '#2e86de')
+    wob(v.title || (v.y === 2000 ? 'かっぱめんきょ' : 'おとなめんきょしょう'), 70, 120, 58, '#2e86de')
     wob('なまえ ' + name, 70, 230, 46, '#222')
     wob(`${v.y}ねん うまれ`, 70, 320, 46, '#27ae60')
     wob('ほんものです', 70, 420, 40, '#e67e22')
@@ -105,8 +105,9 @@ export function drawCard(cv, v, o) {
     x.fillStyle = '#2f6e3a'; x.beginPath(); x.ellipse(W / 2, H / 2, W / 2 - 20, H / 2 - 14, 0, 0, 7); x.fill()
     x.strokeStyle = 'rgba(200,240,190,.35)'; x.lineWidth = 4; for (let a = 0; a < 6.28; a += 0.4) { x.beginPath(); x.moveTo(W / 2, H / 2); x.lineTo(W / 2 + Math.cos(a) * (W / 2 - 30), H / 2 + Math.sin(a) * (H / 2 - 20)); x.stroke() }
     x.fillStyle = '#0f1f10'; x.textAlign = 'center'; x.font = `800 70px ${M}`
-    vtext(x, '河童', 700, 130, 70); vtext(x, '川太郎', 590, 130, 70); x.font = `800 54px ${M}`; vtext(x, '寛政十年', 420, 140, 54); vtext(x, '午年生', 330, 170, 54)
-    if (!ja) { x.font = `700 28px ${F}`; x.fillStyle = '#e8f5e0'; x.fillText('Kawataro / born Kansei 10 (1798), Horse', W / 2, H - 48) }
+    const L = v.leaf || ['河童', '川太郎', '寛政十年', '午年生', 'Kawataro / born Kansei 10 (1798), Horse']
+    vtext(x, L[0], 700, 130, 70); vtext(x, L[1], 590, 130, 70); x.font = `800 54px ${M}`; vtext(x, L[2], 420, 140, 54); vtext(x, L[3], 330, 170, 54)
+    if (!ja) { x.font = `700 28px ${F}`; x.fillStyle = '#e8f5e0'; x.fillText(L[4], W / 2, H - 48) }
     x.textAlign = 'left'
   } else if (v.kind === 'tegata') {
     const g = x.createLinearGradient(0, 0, W, 0); g.addColorStop(0, '#7a4f2a'); g.addColorStop(0.5, '#9a6a3c'); g.addColorStop(1, '#6e4524')

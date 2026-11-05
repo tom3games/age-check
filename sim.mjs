@@ -10,10 +10,12 @@ const BOTS = {
   smart: `const P={c_a:[],c_k:[],c_h:['id'],y_kappa:['id'],y_rokuro:['id'],c_i:['id'],y_zashiki:['ask:birth'],n_tourist:['id']}[c.k]||['id','ask:name','ask:eto']; G.cur.step=G.cur.step||0; const a=P[G.cur.step++]; if(!a){act(st.minor?'refuse':'sell');return} const [x,y]=a.split(':'); act(x,y)`,
   etoOnly: `if(!G.cur.asked.birth){act('ask','birth');return} if(!G.cur.asked.eto){act('ask','eto');return} const [y,e]=st.claim; act(etoOf(y)===e||e==='?'?'sell':'refuse')`,
   idCheck: `if(!G.cur.idAsked){act('id');return} if(G.cur.v.none){act('refuse');return} act(G.cur.v.fake||st.minor?'refuse':'sell')`,
+  idAll: `if(!G.cur.idAsked){act('id');return} if(G.cur.v.none){act('refuse');return} act(G.cur.v.y<=2006?'sell':'refuse')`,
   refuse: `act('refuse')`, sell: `act('sell')`,
 }
 const out = {}
 for (const [name, pol] of Object.entries(BOTS)) {
+  if (process.env.ONLYBOTS && !process.env.ONLYBOTS.split(',').includes(name)) continue
   const res = []
   for (let seed = 1; seed <= N; seed++) {
     res.push(await p.evaluate(([pol, seed]) => {

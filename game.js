@@ -1,7 +1,6 @@
 // 年齢確認 v2 — 本体。売上ノルマ・行列・止まらない時間・偽物の身分証。描画は Canvas 2D、時間は固定60Hz（performance.now で数える）
 import { drawPayslip, totals } from './payslip.js?v=3'
-import { Snd } from './snd.js?v=3'
-import { drawCard } from './card.js?v=3'
+import { drawCard } from './card.js?v=4'
 const D = window.AC
 const $ = s => document.querySelector(s)
 const store = { get(k) { try { return localStorage.getItem(k) } catch (e) { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch (e) {} } }
@@ -12,7 +11,7 @@ const isTouch = () => matchMedia('(pointer:coarse)').matches
 const QS = ['birth', 'eto', 'name', 'trend', 'job']
 
 // ---------- 画像
-const V = '?v=3'
+const V = '?v=4'
 const IMG = {}
 const NAMES = ['bg', 'c_m', 'c_m_x', ...D.C.map(c => c.k), ...D.C.filter(c => c.angry).map(c => c.angry), ...Object.values(D.ITEMS).map(i => i.img)]
 function loadAll() {
@@ -51,7 +50,7 @@ function bgBlur() {
 // ---------- 場面の座標（背景 1536x1024）
 const SW = 1536, SH = 1024, CY = 752, CS = 0.70, IW = 896, IH = 1344, CTOP = 752 - 1110 * CS, K = IW / 1024
 const CX0 = 768 - IW * CS / 2
-const FACEFIX = { c_h: [506, 420], c_i: [540, 380], y_kappa: [511, 400], y_rokuro: [522, 400], y_kappakid: [506, 480], n_eighteen: [504, 470], c_l: [537, 440] }
+const FACEFIX = { c_h: [506, 420], c_i: [540, 380], y_kappa: [511, 400], y_rokuro: [522, 400], y_kappakid: [506, 480], n_eighteen: [504, 470], c_l: [537, 440], n_santa: [500, 470], n_future: [516, 540], n_trip: [512, 430], y_tanuki: [468, 400] }
 const faceOf = k => FACEFIX[k] || (D.C.find(c => c.k === k).hs[0] || [512, 420])
 // 時間: 0:00〜5:00 を SHIFT 秒で
 const SHIFT = 330, PATIENCE = 60, IDLE = 22
