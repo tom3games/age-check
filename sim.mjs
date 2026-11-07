@@ -1,4 +1,5 @@
 // 遊び方ごとの結果の分布。node sim.mjs [夜の数]（音は出さない）
+import './mute-auto.mjs'  // テスト中は絶対に音を出さない（playwright を無音に差し替え）
 import { chromium } from 'playwright'
 import { MUTE_LAUNCH, muteContext } from './mute.mjs'
 import { spawn } from 'node:child_process'
