@@ -47,7 +47,7 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .view{position:fixed;inset:0;z-index:10;height:100svh;overflow:hidden}
 
 /* ---- タイトル ---- */
-#vTitle{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(40px,calc(env(safe-area-inset-top) + 28px)) 16px max(22px,calc(env(safe-area-inset-bottom) + 16px));background:linear-gradient(180deg,rgba(4,6,6,.2),rgba(4,6,6,.15) 45%,rgba(4,6,6,.88) 78%)}
+#vTitle{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(40px,calc(env(safe-area-inset-top) + 28px)) 16px max(22px,calc(calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)) + 16px));background:linear-gradient(180deg,rgba(4,6,6,.2),rgba(4,6,6,.15) 45%,rgba(4,6,6,.88) 78%)}
 .logo{text-align:center;line-height:1}
 .logo .tag{display:inline-block;font-family:var(--dot);font-size:clamp(12px,3.4vw,15px);letter-spacing:.2em;color:var(--fl);border:1px solid rgba(217,242,230,.5);padding:5px 10px;background:rgba(0,0,0,.45)}
 .logo h1{margin-top:14px;font-family:var(--min);font-weight:800;font-size:min(22vw,13vh,128px);letter-spacing:.06em;color:#f3f6f1;text-shadow:0 0 18px rgba(217,242,230,.35),3px 0 0 rgba(232,66,58,.6),-2px 0 0 rgba(80,200,255,.35);animation:flick 5s steps(1) infinite}
@@ -88,7 +88,7 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 #note.tut{border-color:var(--yel);color:#fff2c4}
 #note.warn{border-color:var(--red);color:#ffd2ce}
 
-#panel{position:fixed;z-index:30;left:0;right:0;bottom:0;padding:10px max(10px,env(safe-area-inset-right)) max(10px,calc(env(safe-area-inset-bottom) + 6px)) max(10px,env(safe-area-inset-left));background:linear-gradient(180deg,#141a1b,#0b0f10);border-top:1px solid #2f393b;display:flex;flex-direction:column;gap:8px}
+#panel{position:fixed;z-index:30;left:0;right:0;bottom:0;padding:10px max(10px,env(safe-area-inset-right)) max(10px,calc(calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)) + 6px)) max(10px,env(safe-area-inset-left));background:linear-gradient(180deg,#141a1b,#0b0f10);border-top:1px solid #2f393b;display:flex;flex-direction:column;gap:8px}
 .pos{display:flex;align-items:center;gap:8px;font-family:var(--dot);background:#08201a;border:1px solid #1d4a3c;border-radius:6px;padding:6px 10px;color:#9ff0c8;min-height:36px;font-size:clamp(13px,3.6vw,15px);text-shadow:0 0 6px rgba(80,255,170,.4)}
 .pos .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pos .tag{color:#ffd36b;border:1px solid #6b5a22;padding:1px 5px;font-size:11px;border-radius:3px;white-space:nowrap}
@@ -116,11 +116,11 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 @media (min-aspect-ratio:1/1) and (max-height:430px){
   .key{min-height:46px}
   .qs .key{min-height:38px}
-  #panel{gap:6px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+  #panel{gap:6px;padding-bottom:max(8px,calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)))}
 }
 
 /* ---- モーダル（身分証・早見表・遊び方・店長・事件） ---- */
-.modal{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:rgba(2,4,4,.72)}
+.modal{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)));background:rgba(2,4,4,.72)}
 .modal .card{max-width:min(94vw,640px);max-height:62svh;width:auto;height:auto;border-radius:12px;box-shadow:0 12px 40px #000}
 .modal .btn{width:min(320px,90vw)}
 .sheet{width:min(440px,94vw);background:#f2f0e6;color:#1a1a1a;border-radius:6px;padding:14px 16px;box-shadow:0 12px 40px #000;transform:rotate(-1deg);font-weight:700;max-height:78svh;overflow:hidden;display:flex;flex-direction:column;gap:10px}
@@ -135,7 +135,7 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .howp p{font-size:clamp(13px,3.6vw,15px);line-height:1.6;color:#d6dcd8;padding-left:22px;position:relative}
 .howp p::before{content:attr(data-n);position:absolute;left:0;top:1px;width:16px;height:16px;border-radius:50%;background:var(--red);color:#fff;font-size:11px;font-weight:900;text-align:center;line-height:16px}
 
-#boss{background:linear-gradient(180deg,transparent 40%,rgba(2,4,4,.85));justify-content:flex-end;padding-bottom:max(24px,calc(env(safe-area-inset-bottom) + 18px))}
+#boss{background:linear-gradient(180deg,transparent 40%,rgba(2,4,4,.85));justify-content:flex-end;padding-bottom:max(24px,calc(calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)) + 18px))}
 .say{width:min(560px,94vw);background:rgba(10,14,15,.92);border:1px solid #3b4749;border-radius:12px;padding:12px 16px 14px;display:flex;flex-direction:column;gap:6px}
 .say b{font-size:12px;color:#7fe0b3;letter-spacing:.1em}
 .say p{font-weight:900;font-size:clamp(17px,4.6vw,21px);line-height:1.5;min-height:1.5em}
@@ -147,7 +147,7 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 #event .stamp.in{transform:rotate(-8deg) scale(1);opacity:1}
 
 /* ---- 結果 ---- */
-#vEnd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,calc(env(safe-area-inset-bottom) + 8px));background:rgba(3,5,5,.86)}
+#vEnd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,calc(calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)) + 8px));background:rgba(3,5,5,.86)}
 #slip{flex:1;min-height:0;max-width:100%;width:auto;height:auto;max-height:calc(100svh - 150px);aspect-ratio:1080/1350;border-radius:6px;box-shadow:0 10px 40px #000}
 .endBtns{width:min(460px,100%);display:flex;flex-direction:column;gap:8px}
 @media (min-aspect-ratio:1/1){
@@ -273,6 +273,6 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 <script src="sound.js?v=4"></script>
 <script src="data.js?v=4"></script>
 <script type="module" src="game.js?v=4"></script>
-<script src="support.js?v=4" data-ja="肉まん" data-en="a pork bun"></script>
+<script src="support.js?v=5" data-ja="肉まん" data-en="a pork bun"></script>
 </body>
 </html>
